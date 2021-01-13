@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: pjcapp
+    ports:
+      - 5432:5432
+    volumes:
+      - my_db:/var/lib/postgresql/data
+volumes:
+  my_db:
