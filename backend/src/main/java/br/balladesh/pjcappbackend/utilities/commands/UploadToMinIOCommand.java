@@ -14,9 +14,20 @@ public class UploadToMinIOCommand implements Command<String, HttpException>{
   private final MinIOEndpoint endpoint;
   private final Logger logger = LoggerFactory.getLogger(UploadToMinIOCommand.class);
 
+  private final String fileName;
+
   public UploadToMinIOCommand(MultipartFile file, MinIOEndpoint endpoint) {
     this.file = file;
     this.endpoint = endpoint;
+
+    if (!file.isEmpty())
+      this.fileName = String.format("%d-%s", System.currentTimeMillis(), this.file.getOriginalFilename());
+    else
+      this.fileName = "";
+  }
+
+  public String getFileName() {
+     return this.fileName;
   }
 
   @Override
@@ -37,8 +48,6 @@ public class UploadToMinIOCommand implements Command<String, HttpException>{
             MakeBucketArgs.builder().bucket(this.endpoint.getBucketName()).build()
         );
       }
-
-      String fileName = String.format("%d-%s", System.currentTimeMillis(), this.file.getOriginalFilename());
 
       minioClient.putObject(
           PutObjectArgs
