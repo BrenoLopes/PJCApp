@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.controllers.security.signup;
 
-import br.balladesh.pjcappbackend.controllers.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.SignUpRequest;
 import br.balladesh.pjcappbackend.entity.security.UserEntity;

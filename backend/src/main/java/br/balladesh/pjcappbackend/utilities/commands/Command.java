@@ -1,4 +1,4 @@
-package br.balladesh.pjcappbackend.controllers;
+package br.balladesh.pjcappbackend.utilities.commands;
 
 import br.balladesh.pjcappbackend.utilities.Result;
 

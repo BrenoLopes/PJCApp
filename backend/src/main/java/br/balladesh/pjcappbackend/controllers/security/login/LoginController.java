@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.controllers.security.login;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
-import br.balladesh.pjcappbackend.controllers.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
 import br.balladesh.pjcappbackend.dto.security.JsonResponse;
 import br.balladesh.pjcappbackend.dto.security.LoginRequest;
 

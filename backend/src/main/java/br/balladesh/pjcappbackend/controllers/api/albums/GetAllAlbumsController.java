@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
-import br.balladesh.pjcappbackend.controllers.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
 import br.balladesh.pjcappbackend.dto.api.albums.AllAlbumResponse;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;

@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.controllers.security.signup;
 
-import br.balladesh.pjcappbackend.controllers.Command;
+import br.balladesh.pjcappbackend.utilities.commands.Command;
 import br.balladesh.pjcappbackend.utilities.errors.BadRequestException;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;

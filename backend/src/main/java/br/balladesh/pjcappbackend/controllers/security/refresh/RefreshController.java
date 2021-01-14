@@ -1,9 +1,8 @@
 package br.balladesh.pjcappbackend.controllers.security.refresh;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
-import br.balladesh.pjcappbackend.controllers.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
 import br.balladesh.pjcappbackend.dto.security.JsonResponse;
-import br.balladesh.pjcappbackend.repository.security.UserRepository;
 
 import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -11,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
