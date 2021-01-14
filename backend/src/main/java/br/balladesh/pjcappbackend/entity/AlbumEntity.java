@@ -1,17 +1,15 @@
 package br.balladesh.pjcappbackend.entity;
 
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.persistence.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "id")
-@Entity(name = "Albums")
+@Entity(name = "albums")
 public class AlbumEntity {
   public AlbumEntity() {}
 
@@ -29,7 +27,7 @@ public class AlbumEntity {
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(nullable = false, unique = true)
@@ -80,14 +78,14 @@ public class AlbumEntity {
 
   @Override
   public String toString() {
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      ObjectNode node = this.toJsonObjectMapper(mapper);
-      return mapper
-          .writeValueAsString(node);
-    } catch (JsonProcessingException ignored) {}
+    String str = "{"
+        + "id=%d,"
+        + "name=\"%s\","
+        + "image=\"%s\","
+        + "artist=%s,"
+        + "}";
 
-    return "";
+    return String.format(str, this.id, this.name, this.image, this.artist);
   }
 
   private ObjectNode toJsonObjectMapper(ObjectMapper mapper) {
