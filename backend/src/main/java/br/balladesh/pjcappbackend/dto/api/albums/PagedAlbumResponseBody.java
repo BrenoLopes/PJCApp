@@ -6,19 +6,19 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Objects;
 
-public class PagedAlbumResponse {
+public class PagedAlbumResponseBody {
   public final List<AlbumEntity> albums;
   public final int currentPage, totalPages;
   public final long totalItems;
 
-  public PagedAlbumResponse(List<AlbumEntity> albums, int currentPage, long totalItems, int totalPages) {
+  public PagedAlbumResponseBody(List<AlbumEntity> albums, int currentPage, long totalItems, int totalPages) {
     this.albums = albums;
     this.currentPage = currentPage;
     this.totalPages = totalPages;
     this.totalItems = totalItems;
   }
 
-  public PagedAlbumResponse(Page<AlbumEntity> pagedAlbumEntity) {
+  public PagedAlbumResponseBody(Page<AlbumEntity> pagedAlbumEntity) {
     this.albums = pagedAlbumEntity.getContent();
     this.currentPage = pagedAlbumEntity.getNumber();
     this.totalItems = pagedAlbumEntity.getTotalElements();
@@ -45,7 +45,7 @@ public class PagedAlbumResponse {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    PagedAlbumResponse that = (PagedAlbumResponse) o;
+    PagedAlbumResponseBody that = (PagedAlbumResponseBody) o;
     return currentPage == that.currentPage && totalPages == that.totalPages && totalItems == that.totalItems && albums.equals(that.albums);
   }
 
