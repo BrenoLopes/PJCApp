@@ -1,11 +1,8 @@
 package br.balladesh.pjcappbackend.entity.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jdk.nashorn.internal.ir.ObjectNode;
-
 import javax.persistence.*;
 
-@Entity(name = "Users")
+@Entity(name="users")
 public class UserEntity {
   protected UserEntity() {}
 
@@ -16,7 +13,7 @@ public class UserEntity {
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(nullable = false)

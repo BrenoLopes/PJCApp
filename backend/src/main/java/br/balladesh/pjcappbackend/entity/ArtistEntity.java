@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Entity(name = "Artists")
+@Entity(name = "artists")
 public class ArtistEntity {
   public ArtistEntity() {}
 
@@ -17,7 +18,7 @@ public class ArtistEntity {
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(nullable = false, unique = true)
@@ -39,18 +40,17 @@ public class ArtistEntity {
   }
 
   public List<AlbumEntity> getAlbums() {
-    return albums;
-  }
-
-  public void setAlbums(List<AlbumEntity> albums) {
-    this.albums = albums;
+    if(this.albums == null)
+      return new ArrayList<>();
+    else
+      return albums;
   }
 
   @Override
   public String toString() {
     String str
         = "{"
-        + "id=%d"
+        + "id=%d,"
         + "name=\"%s\","
         + "albums=[%s]"
         + "}";
