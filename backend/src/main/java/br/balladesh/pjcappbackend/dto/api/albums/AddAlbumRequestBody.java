@@ -9,16 +9,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class AddAlbumRequestBody {
-  private String name;
-  private MultipartFile image;
-  private Optional<String> artist_name;
-  private Optional<Long> artist_id;
+  private final String name;
+  private final MultipartFile image;
+  private final String artist_name;
+  private final long artist_id;
 
   public AddAlbumRequestBody(String name, MultipartFile image, Optional<Long> artist_id, Optional<String> artist_name) {
     this.name = name;
     this.image = image;
-    this.artist_id = artist_id;
-    this.artist_name = artist_name;
+    this.artist_id = artist_id.orElse(Long.MIN_VALUE);
+    this.artist_name = artist_name.orElse("");
   }
 
   public String getName() {
@@ -29,11 +29,11 @@ public class AddAlbumRequestBody {
     return image;
   }
 
-  public Optional<String> getArtistName() {
+  public String getArtistName() {
     return artist_name;
   }
 
-  public Optional<Long> getArtistId() {
+  public long getArtistId() {
     return artist_id;
   }
 
@@ -42,7 +42,10 @@ public class AddAlbumRequestBody {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     AddAlbumRequestBody that = (AddAlbumRequestBody) o;
-    return name.equals(that.name) && image.equals(that.image) && Objects.equals(artist_name, that.artist_name) && Objects.equals(artist_id, that.artist_id);
+    return name.equals(that.name)
+        && image.equals(that.image)
+        && Objects.equals(artist_name, that.artist_name)
+        && Objects.equals(artist_id, that.artist_id);
   }
 
   @Override
@@ -57,12 +60,8 @@ public class AddAlbumRequestBody {
 
       node.put("name", this.name);
       node.put("image", this.image.getOriginalFilename());
-
-      String name = this.artist_name.orElse("");
-      node.put("artist_name", name);
-
-      long id = this.artist_id.orElse(-1L);
-      node.put("artist_id", id);
+      node.put("artist_name", this.artist_name);
+      node.put("artist_id", this.artist_id);
 
       return node;
   }
