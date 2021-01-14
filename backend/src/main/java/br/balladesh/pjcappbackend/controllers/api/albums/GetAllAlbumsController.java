@@ -1,7 +1,7 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
-import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
-import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponse;
+import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
+import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
@@ -36,16 +36,16 @@ public class GetAllAlbumsController {
       Pageable _page = PageRequest.of(page, pagesize);
       Page<AlbumEntity> albumPages = this.albumRepository.findAll(_page);
 
-      return ResponseEntity.ok(new PagedAlbumResponse(albumPages));
+      return ResponseEntity.ok(new PagedAlbumResponseBody(albumPages));
     } catch(Exception e) {
       this.logger.error(
           "GetAllAlbumsController::getAllAlbums Could not process the request because of an error! Error: {}",
           e.getMessage()
       );
 
-      return new BuildResponseFromException(
+      return new CreateResponseFromExceptionFactory(
           new InternalServerErrorException("An error happened in the server! Please try again latter!")
-      ).build().getData();
+      ).create().getData();
     }
   }
 }

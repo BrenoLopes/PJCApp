@@ -1,7 +1,7 @@
 package br.balladesh.pjcappbackend.controllers.security.refresh;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
-import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.security.JsonResponse;
 
 import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
@@ -70,7 +70,7 @@ public class RefreshController {
   }
 
   private ResponseEntity<?> showInternalServerError() {
-    return new BuildResponseFromException(new InternalServerErrorException("An error happened inside the server"))
-        .build().getData();
+    return new CreateResponseFromExceptionFactory(new InternalServerErrorException("An error happened inside the server"))
+        .create().getData();
   }
 }

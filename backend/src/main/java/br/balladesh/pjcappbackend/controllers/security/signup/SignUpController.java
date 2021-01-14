@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.controllers.security.signup;
 
-import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.SignUpRequest;
 import br.balladesh.pjcappbackend.entity.security.UserEntity;
@@ -41,7 +41,7 @@ public class SignUpController {
       // If it's not correct then create an appropriate response based on the error
       if (!emailResult.haveData()) {
         HttpException e = emailResult.getException();
-        return new BuildResponseFromException(e).build().getData();
+        return new CreateResponseFromExceptionFactory(e).create().getData();
       }
 
       // If the username is already in use

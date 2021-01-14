@@ -1,9 +1,9 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
-import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponse;
+import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.utilities.errors.BadRequestException;
 import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class GetFilterAlbumsController {
       Pageable pageable = PageRequest.of(page, size);
       Page<AlbumEntity> paged = this.albumRepository.findByIdAndNameAndArtist_Name(id, name, artist, pageable);
 
-      return ResponseEntity.ok(new PagedAlbumResponse(paged));
+      return ResponseEntity.ok(new PagedAlbumResponseBody(paged));
     } catch(NumberFormatException e) {
       return this.showBadRequestException(e);
     } catch(Exception e) {
@@ -58,9 +58,9 @@ public class GetFilterAlbumsController {
         e.getMessage()
     );
 
-    return new BuildResponseFromException(
+    return new CreateResponseFromExceptionFactory(
         new BadRequestException("Could not parse your request because the parameters is invalid!")
-    ).build().getData();
+    ).create().getData();
   }
 
   private ResponseEntity<?> showInternalServerErrorException(Exception e) {
@@ -69,8 +69,8 @@ public class GetFilterAlbumsController {
         e.getMessage()
     );
 
-    return new BuildResponseFromException(
+    return new CreateResponseFromExceptionFactory(
         new InternalServerErrorException("An error occurred in the server while trying to parse your request.")
-    ).build().getData();
+    ).create().getData();
   }
 }

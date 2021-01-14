@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.controllers.security.login;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
-import br.balladesh.pjcappbackend.utilities.builders.BuildResponseFromException;
+import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.security.JsonResponse;
 import br.balladesh.pjcappbackend.dto.security.LoginRequest;
 
@@ -49,7 +49,7 @@ public class LoginController {
           "The informed credentials is incorrect!"
       );
 
-      return new BuildResponseFromException(_e).build().getData();
+      return new CreateResponseFromExceptionFactory(_e).create().getData();
     }
   }
 }
