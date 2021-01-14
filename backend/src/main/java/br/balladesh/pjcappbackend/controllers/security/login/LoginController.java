@@ -2,12 +2,10 @@ package br.balladesh.pjcappbackend.controllers.security.login;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
-import br.balladesh.pjcappbackend.controllers.ExceptionToResponseCommand;
-import br.balladesh.pjcappbackend.dto.MessageResponse;
+import br.balladesh.pjcappbackend.controllers.BuildResponseFromException;
 import br.balladesh.pjcappbackend.dto.security.JsonResponse;
 import br.balladesh.pjcappbackend.dto.security.LoginRequest;
 
-import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.errors.UnauthorizedCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +48,8 @@ public class LoginController {
       HttpException _e = new UnauthorizedCredentialsException(
           "The informed credentials is incorrect!"
       );
-      Result<ResponseEntity<MessageResponse>, HttpException> result =
-          new ExceptionToResponseCommand(_e).execute();
 
-      return result.getData();
+      return new BuildResponseFromException(_e).build().getData();
     }
   }
 }
