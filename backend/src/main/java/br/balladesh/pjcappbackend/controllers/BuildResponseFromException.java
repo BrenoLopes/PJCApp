@@ -1,28 +1,27 @@
 package br.balladesh.pjcappbackend.controllers;
 
 import br.balladesh.pjcappbackend.dto.MessageResponse;
+import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
-import br.balladesh.pjcappbackend.utilities.Result;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class ExceptionToResponseCommand implements Command<ResponseEntity<MessageResponse>, HttpException> {
-  private static final Logger logger = LoggerFactory.getLogger(ExceptionToResponseCommand.class);
+public class BuildResponseFromException implements Builder<ResponseEntity<MessageResponse>, HttpException>{
+  private static final Logger logger = LoggerFactory.getLogger(BuildResponseFromException.class);
 
   private HttpException exception;
 
-  public ExceptionToResponseCommand(HttpException e) {
+  public BuildResponseFromException(HttpException e) {
     this.exception = e;
   }
 
   @Override
-  public Result<ResponseEntity<MessageResponse>, HttpException> execute() {
+  public Result<ResponseEntity<MessageResponse>, HttpException> build() {
     if (this.exception == null) {
-      logger.error("ExceptionToResponseCommand::execute Exception is null.");
+      logger.error("BuildResponseFromException::build Exception is null.");
       this.exception = new InternalServerErrorException("");
     }
 
