@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 
 public class InternalServerErrorException extends HttpException {
   public InternalServerErrorException() {
-    super(HttpStatus.INTERNAL_SERVER_ERROR);
+    super(
+        "An error occurred when trying to process your request!",
+        HttpStatus.INTERNAL_SERVER_ERROR
+    );
   }
 
   public InternalServerErrorException(String message) {
