@@ -4,7 +4,7 @@ import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptio
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

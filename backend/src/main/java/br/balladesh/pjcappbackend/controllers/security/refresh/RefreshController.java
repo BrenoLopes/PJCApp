@@ -4,7 +4,7 @@ import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.security.JsonResponse;
 
-import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import io.jsonwebtoken.impl.DefaultClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

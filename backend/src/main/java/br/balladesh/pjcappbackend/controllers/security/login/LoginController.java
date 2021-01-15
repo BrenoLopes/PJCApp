@@ -7,7 +7,7 @@ import br.balladesh.pjcappbackend.dto.security.JsonResponse;
 import br.balladesh.pjcappbackend.dto.security.LoginRequest;
 
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
-import br.balladesh.pjcappbackend.utilities.errors.UnauthorizedCredentialsException;
+import br.balladesh.pjcappbackend.controllers.exceptions.UnauthorizedCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -8,12 +8,12 @@ import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.services.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
-import br.balladesh.pjcappbackend.utilities.commands.UploadToMinIOCommand;
-import br.balladesh.pjcappbackend.utilities.errors.BadRequestException;
-import br.balladesh.pjcappbackend.utilities.errors.ConflictException;
+import br.balladesh.pjcappbackend.minio.UploadToMinIOCommand;
+import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
+import br.balladesh.pjcappbackend.controllers.exceptions.ConflictException;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 
-import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

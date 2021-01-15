@@ -3,7 +3,7 @@ package br.balladesh.pjcappbackend.utilities.factories;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
-import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

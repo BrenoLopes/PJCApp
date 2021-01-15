@@ -1,9 +1,9 @@
 package br.balladesh.pjcappbackend.controllers.security.signup;
 
 import br.balladesh.pjcappbackend.utilities.commands.Command;
-import br.balladesh.pjcappbackend.utilities.errors.BadRequestException;
+import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
-import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.utilities.Result;
 
 import org.slf4j.Logger;

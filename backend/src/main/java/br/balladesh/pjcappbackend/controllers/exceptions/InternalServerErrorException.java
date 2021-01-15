@@ -1,5 +1,6 @@
-package br.balladesh.pjcappbackend.utilities.errors;
+package br.balladesh.pjcappbackend.controllers.exceptions;
 
+import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import org.springframework.http.HttpStatus;
 
 public class InternalServerErrorException extends HttpException {

@@ -1,15 +1,16 @@
-package br.balladesh.pjcappbackend.utilities.commands;
+package br.balladesh.pjcappbackend.minio;
 
 import br.balladesh.pjcappbackend.services.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
+import br.balladesh.pjcappbackend.utilities.commands.Command;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
-import br.balladesh.pjcappbackend.utilities.errors.InternalServerErrorException;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import io.minio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-public class UploadToMinIOCommand implements Command<String, HttpException>{
+public class UploadToMinIOCommand implements Command<String, HttpException> {
   private final MultipartFile file;
   private final MinIOEndpoint endpoint;
   private final Logger logger = LoggerFactory.getLogger(UploadToMinIOCommand.class);
