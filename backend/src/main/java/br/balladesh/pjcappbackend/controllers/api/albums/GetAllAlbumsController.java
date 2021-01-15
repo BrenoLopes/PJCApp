@@ -15,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping("/api/albums")
@@ -36,10 +40,17 @@ public class GetAllAlbumsController {
   @GetMapping("/list")
   public ResponseEntity<?> getAllAlbums(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int pagesize
+      @RequestParam(defaultValue = "10") int pagesize,
+      @RequestParam(defaultValue = "ASC") String direction
   ){
     try {
-      Pageable _page = PageRequest.of(page, pagesize);
+      Sort sort = Sort.by("name");
+
+      if (!direction.equalsIgnoreCase("asc")) {
+        sort = sort.descending();
+      }
+
+      Pageable _page = PageRequest.of(page, pagesize, sort);
       Page<AlbumEntity> albumPages = this.albumRepository.findAll(_page)
           .map(this::loadMinIOImages);
 
@@ -57,10 +68,9 @@ public class GetAllAlbumsController {
   }
 
   private AlbumEntity loadMinIOImages(AlbumEntity entity) {
-    GetFromMinIOCommand resolver = new GetFromMinIOCommand(entity.getImage(), this.endpoint);
-    Result<String, HttpException> result = resolver.execute();
+    Result<String, HttpException> result = new GetFromMinIOCommand(entity.getImage(), this.endpoint)
+        .execute();
 
-    // Ignore the errors, but still log it
     String resultData = result.haveData() ? result.getData() : "";
     entity.setImage(resultData);
 
