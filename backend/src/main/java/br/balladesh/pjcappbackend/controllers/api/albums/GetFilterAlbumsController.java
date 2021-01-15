@@ -2,7 +2,11 @@ package br.balladesh.pjcappbackend.controllers.api.albums;
 
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
+import br.balladesh.pjcappbackend.minio.GetFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
+import br.balladesh.pjcappbackend.services.MinIOEndpoint;
+import br.balladesh.pjcappbackend.utilities.Result;
+import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
@@ -18,18 +22,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/api/albums")
 public class GetFilterAlbumsController {
   private final AlbumRepository albumRepository;
+  private final MinIOEndpoint endpoint;
 
   private final Logger logger = LoggerFactory.getLogger(GetFilterAlbumsController.class);
 
   @Autowired
-  public GetFilterAlbumsController(AlbumRepository albumRepository)
+  public GetFilterAlbumsController(AlbumRepository albumRepository, MinIOEndpoint endpoint)
   {
     this.albumRepository = albumRepository;
+    this.endpoint = endpoint;
   }
 
   @GetMapping()
@@ -42,7 +47,8 @@ public class GetFilterAlbumsController {
   ) {
     try {
       Pageable pageable = PageRequest.of(page, size);
-      Page<AlbumEntity> paged = this.albumRepository.findByIdAndNameAndArtist_Name(id, name, artist, pageable);
+      Page<AlbumEntity> paged = this.albumRepository.findByIdAndNameAndArtist_Name(id, name, artist, pageable)
+          .map(this::loadMinIOImages);
 
       return ResponseEntity.ok(new PagedAlbumResponseBody(paged));
     } catch(NumberFormatException e) {
@@ -50,6 +56,17 @@ public class GetFilterAlbumsController {
     } catch(Exception e) {
       return this.showInternalServerErrorException(e);
     }
+  }
+
+  private AlbumEntity loadMinIOImages(AlbumEntity entity) {
+    GetFromMinIOCommand resolver = new GetFromMinIOCommand(entity.getImage(), this.endpoint);
+    Result<String, HttpException> result = resolver.execute();
+
+    // Ignore the errors, but still log it
+    String resultData = result.haveData() ? result.getData() : "";
+    entity.setImage(resultData);
+
+    return entity;
   }
 
   private ResponseEntity<?> showBadRequestException(Exception e) {

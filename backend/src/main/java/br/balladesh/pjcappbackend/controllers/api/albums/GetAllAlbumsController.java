@@ -1,5 +1,9 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
+import br.balladesh.pjcappbackend.minio.GetFromMinIOCommand;
+import br.balladesh.pjcappbackend.services.MinIOEndpoint;
+import br.balladesh.pjcappbackend.utilities.Result;
+import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
@@ -18,13 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/albums")
 public class GetAllAlbumsController {
   private final AlbumRepository albumRepository;
+  private final MinIOEndpoint endpoint;
 
   private final Logger logger = LoggerFactory.getLogger(GetAllAlbumsController.class);
 
   @Autowired
-  public GetAllAlbumsController(AlbumRepository albumRepository)
+  public GetAllAlbumsController(AlbumRepository albumRepository, MinIOEndpoint endpoint)
   {
     this.albumRepository = albumRepository;
+    this.endpoint = endpoint;
   }
 
   @GetMapping("/list")
@@ -34,7 +40,8 @@ public class GetAllAlbumsController {
   ){
     try {
       Pageable _page = PageRequest.of(page, pagesize);
-      Page<AlbumEntity> albumPages = this.albumRepository.findAll(_page);
+      Page<AlbumEntity> albumPages = this.albumRepository.findAll(_page)
+          .map(this::loadMinIOImages);
 
       return ResponseEntity.ok(new PagedAlbumResponseBody(albumPages));
     } catch(Exception e) {
@@ -47,5 +54,16 @@ public class GetAllAlbumsController {
           new InternalServerErrorException("An error happened in the server! Please try again latter!")
       ).create().getData();
     }
+  }
+
+  private AlbumEntity loadMinIOImages(AlbumEntity entity) {
+    GetFromMinIOCommand resolver = new GetFromMinIOCommand(entity.getImage(), this.endpoint);
+    Result<String, HttpException> result = resolver.execute();
+
+    // Ignore the errors, but still log it
+    String resultData = result.haveData() ? result.getData() : "";
+    entity.setImage(resultData);
+
+    return entity;
   }
 }
