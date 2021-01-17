@@ -1,43 +1,52 @@
 package br.balladesh.pjcappbackend.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 
-import java.util.List;
-import java.util.Objects;
-
+/**
+ * A DTO class to show a welcome message at the api endpoint for the client to have more information about the
+ * server.
+ */
 public class ApiMessage {
   private final String message;
 
-  @JsonProperty("api.login")
-  private final Endpoint api_login;
+  private final ImmutableMap<String, Endpoint> api_security;
 
-  @JsonProperty("api.signup")
-  private final Endpoint api_signup;
+  private final ImmutableMap<String, Endpoint> api_artists;
 
-  @JsonProperty("api.refresh")
-  private final Endpoint api_refresh;
+  private final ImmutableMap<String, Endpoint> api_albums;
 
-  public ApiMessage(String message, Endpoint apiLogin, Endpoint apiSignup, Endpoint apiRefresh) {
-    this.message = message;
-    this.api_login = apiLogin;
-    this.api_signup = apiSignup;
-    this.api_refresh = apiRefresh;
+  public ApiMessage(
+      String message,
+      ImmutableMap<String, Endpoint> securityEndpoints,
+      ImmutableMap<String, Endpoint> artistsEndpoints,
+      ImmutableMap<String, Endpoint> albumsEndpoints
+  ) {
+    this.message = MoreObjects.firstNonNull(message, "");
+    this.api_security = MoreObjects.firstNonNull(securityEndpoints, ImmutableMap.of());
+    this.api_artists = MoreObjects.firstNonNull(artistsEndpoints, ImmutableMap.of());
+    this.api_albums = MoreObjects.firstNonNull(albumsEndpoints, ImmutableMap.of());
   }
 
   public String getMessage() {
     return message;
   }
 
-  public Endpoint getApi_login() {
-    return api_login;
+  @JsonProperty("api.security")
+  public ImmutableMap<String, Endpoint> getApiSecurityEndpoints() {
+    return this.api_security;
   }
 
-  public Endpoint getApi_signup() {
-    return api_signup;
+  @JsonProperty("api.artists")
+  public ImmutableMap<String, Endpoint> getApiArtistsEndpoints() {
+    return this.api_artists;
   }
 
-  public Endpoint getApi_refresh() {
-    return api_refresh;
+  @JsonProperty("api.albums")
+  public ImmutableMap<String, Endpoint> getApiAlbumsEndpoints() {
+    return this.api_albums;
   }
 
   @Override
@@ -46,31 +55,23 @@ public class ApiMessage {
     if (o == null || getClass() != o.getClass()) return false;
     ApiMessage that = (ApiMessage) o;
     return message.equals(that.message)
-        && api_login.equals(that.api_login)
-        && api_signup.equals(that.api_signup)
-        && api_refresh.equals(that.api_refresh);
+        && api_security.equals(that.api_security)
+        && api_artists.equals(that.api_artists)
+        && api_albums.equals(that.api_albums);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(message, api_login, api_signup, api_refresh);
+    return Objects.hashCode(this.message, this.api_security, this.api_artists, this.api_albums);
   }
 
   @Override
   public String toString() {
-    String str = "{"
-        + "message=\"%s\","
-        + "api.login=%s,"
-        + "api.signup=%s,"
-        + "api.refresh=%s"
-        + "}";
-
-    return String.format(
-        str,
-        this.message,
-        this.api_login.toString(),
-        this.api_signup.toString(),
-        this.api_refresh.toString()
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("message", this.message)
+        .add("api.security", this.api_security)
+        .add("api.artists", this.api_artists)
+        .add("api.albums", this.api_albums)
+        .toString();
   }
 }

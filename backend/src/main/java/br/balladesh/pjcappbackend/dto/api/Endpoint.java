@@ -1,14 +1,23 @@
 package br.balladesh.pjcappbackend.dto.api;
 
-import java.util.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
+/**
+ * A class to map an endpoint with the method to access that endpoint.
+ */
 public class Endpoint {
   private final String url;
   private final String method;
 
+  public Endpoint() {
+    this.url = "";
+    this.method = "";
+  }
+
   public Endpoint(String url, String method) {
-    this.url = url;
-    this.method = method;
+    this.url = MoreObjects.firstNonNull(url, "");
+    this.method = MoreObjects.firstNonNull(method, "");
   }
 
   public String getUrl() {
@@ -29,20 +38,14 @@ public class Endpoint {
 
   @Override
   public int hashCode() {
-    return Objects.hash(url, method);
+    return Objects.hashCode(url, method);
   }
 
   @Override
   public String toString() {
-    String str = "{"
-        + "url=\"%s\","
-        + "method=\"%s\""
-        + "}";
-
-    return String.format(
-        str,
-        this.url,
-        this.method
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("url", this.url)
+        .add("method", this.method)
+        .toString();
   }
 }
