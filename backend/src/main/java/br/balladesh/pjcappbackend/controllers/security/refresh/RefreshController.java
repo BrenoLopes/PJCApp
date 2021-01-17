@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.controllers.security.refresh;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
-import br.balladesh.pjcappbackend.dto.security.JsonResponse;
+import br.balladesh.pjcappbackend.dto.security.JwtJsonResponse;
 
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -51,7 +51,7 @@ public class RefreshController {
       return this.showInternalServerError();
     }
 
-    return ResponseEntity.ok(new JsonResponse(username.get(), jwtToken.get()));
+    return ResponseEntity.ok(new JwtJsonResponse(username.get(), jwtToken.get()));
   }
 
   private ResponseEntity<?> showNewRefreshedJwtToken(HttpServletRequest request) {
@@ -66,7 +66,7 @@ public class RefreshController {
     }
 
     final String token = this.jwtUtils.generateRefreshToken(username.get());
-    return ResponseEntity.ok(new JsonResponse(username.get(), token));
+    return ResponseEntity.ok(new JwtJsonResponse(username.get(), token));
   }
 
   private ResponseEntity<?> showInternalServerError() {

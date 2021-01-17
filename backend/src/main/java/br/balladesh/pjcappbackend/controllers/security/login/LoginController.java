@@ -3,8 +3,8 @@ package br.balladesh.pjcappbackend.controllers.security.login;
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
-import br.balladesh.pjcappbackend.dto.security.JsonResponse;
-import br.balladesh.pjcappbackend.dto.security.LoginRequest;
+import br.balladesh.pjcappbackend.dto.security.JwtJsonResponse;
+import br.balladesh.pjcappbackend.dto.security.UserLoginRequest;
 
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.controllers.exceptions.UnauthorizedCredentialsException;
@@ -30,7 +30,7 @@ public class LoginController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<?> authUser(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> authUser(@RequestBody UserLoginRequest loginRequest) {
     try {
       Authentication authentication = this.authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
@@ -43,7 +43,7 @@ public class LoginController {
       String jwt = this.jwtUtils.generateJwtToken(authentication);
 
       MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-      return ResponseEntity.ok(new JsonResponse(userDetails.getUsername(), jwt));
+      return ResponseEntity.ok(new JwtJsonResponse(userDetails.getUsername(), jwt));
     } catch(Exception e) {
       HttpException _e = new UnauthorizedCredentialsException(
           "The informed credentials is incorrect!"

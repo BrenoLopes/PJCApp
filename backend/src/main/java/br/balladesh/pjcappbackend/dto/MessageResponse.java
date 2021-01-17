@@ -1,15 +1,13 @@
 package br.balladesh.pjcappbackend.dto;
 
-import java.util.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 public class MessageResponse {
   private final String message;
 
   public MessageResponse(String message) {
-    if (message == null)
-      this.message = "";
-    else
-      this.message = message;
+    this.message = MoreObjects.firstNonNull(message, "");
   }
 
   public String getMessage() {
@@ -21,23 +19,18 @@ public class MessageResponse {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     MessageResponse that = (MessageResponse) o;
-    return Objects.equals(message, that.message);
+    return message.equals(that.message);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(message);
+    return Objects.hashCode(this.message);
   }
 
   @Override
   public String toString() {
-    String str = "{"
-        + "message=\"%s\""
-        + "}";
-
-    return String.format(
-        str,
-        this.message
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("message", this.message)
+        .toString();
   }
 }

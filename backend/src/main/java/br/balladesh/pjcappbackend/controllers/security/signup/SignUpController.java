@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.controllers.security.signup;
 
 import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
-import br.balladesh.pjcappbackend.dto.security.SignUpRequest;
+import br.balladesh.pjcappbackend.dto.security.UserSignUpRequest;
 import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.security.UserRepository;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
@@ -32,7 +32,7 @@ public class SignUpController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@RequestBody SignUpRequest request) {
+  public ResponseEntity<?> registerUser(@RequestBody UserSignUpRequest request) {
     try {
       // Check if the email provided by the user is correct
       Result<Boolean, HttpException> emailResult = new CheckEmailCommand(request.getUsername())
