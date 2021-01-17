@@ -10,11 +10,14 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity(name = "artists")
 public class ArtistEntity {
-  public ArtistEntity() {}
+  public ArtistEntity() {
+    this.name = "";
+    this.albums = new ArrayList<>();
+  }
 
   public ArtistEntity(String name, List<AlbumEntity> album) {
-    this.name = name;
-    this.albums = album;
+    this.name = name == null ? "" : name;
+    this.albums = album == null ? new ArrayList<>() : album;
   }
 
   @Id
@@ -40,9 +43,6 @@ public class ArtistEntity {
   }
 
   public List<AlbumEntity> getAlbums() {
-    if(this.albums == null)
-      return new ArrayList<>();
-    else
       return albums;
   }
 
