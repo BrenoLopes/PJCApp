@@ -14,10 +14,7 @@ public class PagedAlbumResponseBody {
   public final long totalItems;
 
   public PagedAlbumResponseBody(List<AlbumEntity> albums, int currentPage, long totalItems, int totalPages) {
-    this.albums = MoreObjects.firstNonNull(
-        ImmutableList.copyOf(albums),
-        ImmutableList.of()
-    );
+    this.albums = ImmutableList.copyOf(albums == null ? ImmutableList.of() : albums);
     this.currentPage = currentPage;
     this.totalPages = totalPages;
     this.totalItems = totalItems;
