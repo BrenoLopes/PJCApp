@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.security;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,7 @@ class UserLoginRequestTest {
     String expected = null;
     UserLoginRequest classToTest = new UserLoginRequest(expected, "");
 
-    assertEquals("", classToTest.getUsername());
+    assertEquals(Defaults.DEFAULT_STR, classToTest.getUsername());
   }
 
   @Test
@@ -34,6 +35,6 @@ class UserLoginRequestTest {
     String expected = null;
     UserLoginRequest classToTest = new UserLoginRequest("", expected);
 
-    assertEquals("", classToTest.getPassword());
+    assertEquals(Defaults.DEFAULT_STR, classToTest.getPassword());
   }
 }

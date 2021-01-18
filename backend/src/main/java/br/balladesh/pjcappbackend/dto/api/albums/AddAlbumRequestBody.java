@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api.albums;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,10 +16,10 @@ public class AddAlbumRequestBody {
   private final long artist_id;
 
   public AddAlbumRequestBody(String name, MultipartFile image, Long artist_id, String artist_name) {
-    this.name = MoreObjects.firstNonNull(name, "");
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.image = MoreObjects.firstNonNull(image, new EmptyMultipartFile());
     this.artist_id = MoreObjects.firstNonNull(artist_id, Long.MIN_VALUE);
-    this.artist_name = MoreObjects.firstNonNull(artist_name, "");
+    this.artist_name = MoreObjects.firstNonNull(artist_name, Defaults.DEFAULT_STR);
   }
 
   public String getName() {

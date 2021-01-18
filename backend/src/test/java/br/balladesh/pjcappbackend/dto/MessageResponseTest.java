@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +34,7 @@ class MessageResponseTest {
     String received = classToTest.getMessage();
 
     assertEquals(
-        "",
+        Defaults.DEFAULT_STR,
         received,
         "The class must return an empty string in case a null one was used in the constructor."
     );
