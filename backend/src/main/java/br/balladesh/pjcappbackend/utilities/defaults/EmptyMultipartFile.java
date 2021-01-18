@@ -1,13 +1,12 @@
 package br.balladesh.pjcappbackend.utilities.defaults;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public final class EmptyMultipartFile implements MultipartFile {
   @Override
@@ -54,7 +53,8 @@ public final class EmptyMultipartFile implements MultipartFile {
     if (o.getClass() != this.getClass()) return false;
 
     final EmptyMultipartFile that = (EmptyMultipartFile) o;
-    return Objects.equal(this.getBytes(), that.getBytes())
+
+    return Arrays.equals(this.getBytes(), that.getBytes())
         && Objects.equal(this.getName(), that.getName())
         && Objects.equal(this.getContentType(), that.getName())
         && Objects.equal(this.isEmpty(), that.isEmpty())

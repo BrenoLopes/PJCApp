@@ -12,7 +12,7 @@
 	<artifactId>pjc-app</artifactId>
 	<version>0.0.1</version>
 	<name>pjc-app</name>
-	<description>An application to register a group of artist and their album metadata</description>
+	<description>An application to register a group of artist and their album metadata.</description>
 
 	<properties>
 		<java.version>1.8</java.version>
