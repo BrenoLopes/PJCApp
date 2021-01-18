@@ -1,31 +1,36 @@
 package br.balladesh.pjcappbackend.dto.api.albums;
 
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.Objects;
 
 public class PagedAlbumResponseBody {
-  public final List<AlbumEntity> albums;
+  public final ImmutableList<AlbumEntity> albums;
   public final int currentPage, totalPages;
   public final long totalItems;
 
   public PagedAlbumResponseBody(List<AlbumEntity> albums, int currentPage, long totalItems, int totalPages) {
-    this.albums = albums;
+    this.albums = MoreObjects.firstNonNull(
+        ImmutableList.copyOf(albums),
+        ImmutableList.of()
+    );
     this.currentPage = currentPage;
     this.totalPages = totalPages;
     this.totalItems = totalItems;
   }
 
   public PagedAlbumResponseBody(Page<AlbumEntity> pagedAlbumEntity) {
-    this.albums = pagedAlbumEntity.getContent();
+    this.albums = ImmutableList.copyOf(pagedAlbumEntity.getContent());
     this.currentPage = pagedAlbumEntity.getNumber();
     this.totalItems = pagedAlbumEntity.getTotalElements();
     this.totalPages = pagedAlbumEntity.getTotalPages();
   }
 
-  public List<AlbumEntity> getAlbums() {
+  public ImmutableList<AlbumEntity> getAlbums() {
     return albums;
   }
 
@@ -46,30 +51,24 @@ public class PagedAlbumResponseBody {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     PagedAlbumResponseBody that = (PagedAlbumResponseBody) o;
-    return currentPage == that.currentPage && totalPages == that.totalPages && totalItems == that.totalItems && albums.equals(that.albums);
+    return currentPage == that.currentPage
+        && totalPages == that.totalPages
+        && totalItems == that.totalItems
+        && albums.equals(that.albums);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(albums, currentPage, totalPages, totalItems);
+    return Objects.hashCode(this.albums, this.currentPage, this.totalItems, this.totalItems);
   }
 
   @Override
   public String toString() {
-    String str
-        = "{"
-        + "albums=%s,"
-        + "currentPage=\"%d\","
-        + "totalItems=\"%d\","
-        + "totalPages=\"%d\""
-        + "}";
-
-    return String.format(
-        str,
-        this.albums,
-        this.currentPage,
-        this.totalItems,
-        this.totalPages
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("albums", this.albums)
+        .add("currentPage", this.currentPage)
+        .add("totalItems", this.totalItems)
+        .add("totalPages", this.totalPages)
+        .toString();
   }
 }

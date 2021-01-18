@@ -1,20 +1,14 @@
 package br.balladesh.pjcappbackend.dto.api.artists;
 
-import java.util.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 public class AddArtistRequestDTO {
-  private String name;
+  private final String name;
 
-  public AddArtistRequestDTO() {
-    this.name = "";
-  }
-
-  public AddArtistRequestDTO(String name) {
-    this.name = name == null ? "" : name;
-  }
-
-  public void setName(String name) {
-    this.name = name == null ? "" : name;
+  public AddArtistRequestDTO(String name)
+  {
+    this.name = MoreObjects.firstNonNull(name, "");
   }
 
   public String getName() {
@@ -31,15 +25,13 @@ public class AddArtistRequestDTO {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hashCode(this.name);
   }
 
   @Override
   public String toString() {
-    String fmt = "{"
-        + "name=\"%s\","
-        + "}";
-
-    return String.format(fmt, this.name);
+    return MoreObjects.toStringHelper(this)
+        .add("name", this.name)
+        .toString();
   }
 }

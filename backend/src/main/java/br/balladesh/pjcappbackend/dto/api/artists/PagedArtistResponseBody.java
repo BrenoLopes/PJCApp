@@ -1,31 +1,36 @@
 package br.balladesh.pjcappbackend.dto.api.artists;
 
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Objects;
 
 public class PagedArtistResponseBody {
-  public final List<ArtistEntity> artists;
+  public final ImmutableList<ArtistEntity> artists;
   public final int currentPage, totalPages;
   public final long totalItems;
 
   public PagedArtistResponseBody(List<ArtistEntity> artists, int currentPage, long totalItems, int totalPages) {
-    this.artists = artists;
+    this.artists = MoreObjects.firstNonNull(
+        ImmutableList.copyOf(artists),
+        ImmutableList.of()
+    );
     this.currentPage = currentPage;
     this.totalPages = totalPages;
     this.totalItems = totalItems;
   }
 
   public PagedArtistResponseBody(Page<ArtistEntity> pagedArtistsEntity) {
-    this.artists = pagedArtistsEntity.getContent();
+    this.artists = ImmutableList.copyOf(pagedArtistsEntity.getContent());
     this.currentPage = pagedArtistsEntity.getNumber();
     this.totalItems = pagedArtistsEntity.getTotalElements();
     this.totalPages = pagedArtistsEntity.getTotalPages();
   }
 
-  public List<ArtistEntity> getArtists() {
+  public ImmutableList<ArtistEntity> getArtists() {
     return artists;
   }
 
@@ -54,25 +59,16 @@ public class PagedArtistResponseBody {
 
   @Override
   public int hashCode() {
-    return Objects.hash(artists, currentPage, totalPages, totalItems);
+    return Objects.hash(this.currentPage, this.totalItems, this.totalPages, this.artists);
   }
 
   @Override
   public String toString() {
-    String str
-        = "{"
-        + "artists=[%s],"
-        + "currentPage=\"%d\","
-        + "totalItems=\"%d\","
-        + "totalPages=\"%d\""
-        + "}";
-
-    return String.format(
-        str,
-        this.artists,
-        this.currentPage,
-        this.totalItems,
-        this.totalPages
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("artists", this.artists)
+        .add("currentPage", this.currentPage)
+        .add("totalItems", this.totalItems)
+        .add("totalPages", this.totalPages)
+        .toString();
   }
 }

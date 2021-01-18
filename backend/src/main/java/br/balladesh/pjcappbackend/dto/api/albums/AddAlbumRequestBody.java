@@ -1,12 +1,12 @@
 package br.balladesh.pjcappbackend.dto.api.albums;
 
+import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Objects;
-import java.util.Optional;
 
 public class AddAlbumRequestBody {
   private final String name;
@@ -14,11 +14,11 @@ public class AddAlbumRequestBody {
   private final String artist_name;
   private final long artist_id;
 
-  public AddAlbumRequestBody(String name, MultipartFile image, Optional<Long> artist_id, Optional<String> artist_name) {
-    this.name = name;
-    this.image = image;
-    this.artist_id = artist_id.orElse(Long.MIN_VALUE);
-    this.artist_name = artist_name.orElse("");
+  public AddAlbumRequestBody(String name, MultipartFile image, Long artist_id, String artist_name) {
+    this.name = MoreObjects.firstNonNull(name, "");
+    this.image = MoreObjects.firstNonNull(image, new EmptyMultipartFile());
+    this.artist_id = MoreObjects.firstNonNull(artist_id, Long.MIN_VALUE);
+    this.artist_name = MoreObjects.firstNonNull(artist_name, "");
   }
 
   public String getName() {
@@ -42,15 +42,15 @@ public class AddAlbumRequestBody {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     AddAlbumRequestBody that = (AddAlbumRequestBody) o;
-    return name.equals(that.name)
+    return artist_id == that.artist_id
+        && name.equals(that.name)
         && image.equals(that.image)
-        && Objects.equals(artist_name, that.artist_name)
-        && Objects.equals(artist_id, that.artist_id);
+        && artist_name.equals(that.artist_name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, image, artist_name, artist_id);
+    return Objects.hashCode(this.name, this.image, this.artist_id, this.artist_name);
   }
 
   @JsonValue
@@ -64,5 +64,15 @@ public class AddAlbumRequestBody {
       node.put("artist_id", this.artist_id);
 
       return node;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("name", this.name)
+        .add("image", this.image)
+        .add("artist_id", this.artist_id)
+        .add("artist_name", this.artist_name)
+        .toString();
   }
 }

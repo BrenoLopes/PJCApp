@@ -1,21 +1,20 @@
 package br.balladesh.pjcappbackend.dto.api.albums;
 
+import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.*;
-import java.util.Objects;
-import java.util.Optional;
 
 public class EditAlbumRequestBody {
   private final String name;
-  private final long id, artist_id;
+  private final long id, artistId;
   private final MultipartFile image;
 
-  public EditAlbumRequestBody(long id, Optional<String> name, Optional<MultipartFile> image, Optional<Long> artist_id) {
+  public EditAlbumRequestBody(long id, String name, MultipartFile image, Long artistId) {
     this.id = id;
-    this.name = name.orElse("");
-    this.image = image.orElse(new EmptyMultipartFile() );
-    this.artist_id = artist_id.orElse(Long.MIN_VALUE);
+    this.name = MoreObjects.firstNonNull(name, "");
+    this.image = MoreObjects.firstNonNull(image, new EmptyMultipartFile());
+    this.artistId = MoreObjects.firstNonNull(artistId, Long.MIN_VALUE);
   }
 
   public String getName() {
@@ -31,7 +30,7 @@ public class EditAlbumRequestBody {
   }
 
   public long getArtistId() {
-    return artist_id;
+    return artistId;
   }
 
   @Override
@@ -39,74 +38,25 @@ public class EditAlbumRequestBody {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     EditAlbumRequestBody that = (EditAlbumRequestBody) o;
-    return this.id == that.id
-        && artist_id == that.artist_id
-        && Objects.equals(name, that.name)
-        && Objects.equals(image, that.image);
+    return id == that.id
+        && artistId == that.artistId
+        && name.equals(that.name)
+        && image.equals(that.image);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, image, id, artist_id);
+    return Objects.hashCode(name, image, id, artistId);
   }
 
   @Override
   public String toString() {
-    String str
-        = "{"
-        + "id=\"%d\","
-        + "name=%s,"
-        + "image=\"%s\","
-        + "artist_id=\"%d\""
-        + "}";
-
-    return String.format(
-        str,
-        this.id,
-        this.name,
-        this.image,
-        this.artist_id
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("id", this.id)
+        .add("name", this.name)
+        .add("image", this.image)
+        .add("artistId", this.artistId)
+        .toString();
   }
 }
 
-final class EmptyMultipartFile implements MultipartFile
-{
-  @Override
-  public String getName() {
-    return "";
-  }
-
-  @Override
-  public String getOriginalFilename() {
-    return "";
-  }
-
-  @Override
-  public String getContentType() {
-    return "";
-  }
-
-  @Override
-  public boolean isEmpty() {
-    return true;
-  }
-
-  @Override
-  public long getSize() {
-    return 0;
-  }
-
-  @Override
-  public byte[] getBytes() throws IOException {
-    return new byte[0];
-  }
-
-  @Override
-  public InputStream getInputStream() throws IOException {
-    return new ByteArrayInputStream(this.getBytes());
-  }
-
-  @Override
-  public void transferTo(File file) throws IOException, IllegalStateException {}
-}
