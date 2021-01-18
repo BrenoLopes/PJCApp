@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -11,13 +12,13 @@ public class Endpoint {
   private final String method;
 
   public Endpoint() {
-    this.url = "";
-    this.method = "";
+    this.url = Defaults.DEFAULT_STR;
+    this.method = Defaults.DEFAULT_STR;
   }
 
   public Endpoint(String url, String method) {
-    this.url = MoreObjects.firstNonNull(url, "");
-    this.method = MoreObjects.firstNonNull(method, "");
+    this.url = MoreObjects.firstNonNull(url, Defaults.DEFAULT_STR);
+    this.method = MoreObjects.firstNonNull(method, Defaults.DEFAULT_STR);
   }
 
   public String getUrl() {

@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -24,7 +25,7 @@ public class ApiMessage {
       ImmutableMap<String, Endpoint> artistsEndpoints,
       ImmutableMap<String, Endpoint> albumsEndpoints
   ) {
-    this.message = MoreObjects.firstNonNull(message, "");
+    this.message = MoreObjects.firstNonNull(message, Defaults.DEFAULT_STR);
     this.api_security = MoreObjects.firstNonNull(securityEndpoints, ImmutableMap.of());
     this.api_artists = MoreObjects.firstNonNull(artistsEndpoints, ImmutableMap.of());
     this.api_albums = MoreObjects.firstNonNull(albumsEndpoints, ImmutableMap.of());

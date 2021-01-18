@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.security;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -10,8 +11,8 @@ public class UserLoginRequest {
   private final String username, password;
 
   public UserLoginRequest(String username, String password) {
-    this.username = MoreObjects.firstNonNull(username, "");
-    this.password = MoreObjects.firstNonNull(password, "");
+    this.username = MoreObjects.firstNonNull(username, Defaults.DEFAULT_STR);
+    this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
   }
 
   public String getUsername() {

@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api.albums;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -10,11 +11,11 @@ public class EditAlbumRequestBody {
   private final long id, artistId;
   private final MultipartFile image;
 
-  public EditAlbumRequestBody(long id, String name, MultipartFile image, Long artistId) {
-    this.id = id;
-    this.name = MoreObjects.firstNonNull(name, "");
+  public EditAlbumRequestBody(Long id, String name, MultipartFile image, Long artistId) {
+    this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.image = MoreObjects.firstNonNull(image, new EmptyMultipartFile());
-    this.artistId = MoreObjects.firstNonNull(artistId, Long.MIN_VALUE);
+    this.artistId = MoreObjects.firstNonNull(artistId, Defaults.getDefaultLong());
   }
 
   public String getName() {

@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -7,7 +8,7 @@ public class MessageResponse {
   private final String message;
 
   public MessageResponse(String message) {
-    this.message = MoreObjects.firstNonNull(message, "");
+    this.message = MoreObjects.firstNonNull(message, Defaults.DEFAULT_STR);
   }
 
   public String getMessage() {

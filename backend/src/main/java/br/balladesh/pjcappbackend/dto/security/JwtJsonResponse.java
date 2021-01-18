@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.security;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -11,8 +12,8 @@ public class JwtJsonResponse {
   private final String username, token;
 
   public JwtJsonResponse(String username, String token) {
-    this.username = MoreObjects.firstNonNull(username, "");
-    this.token = MoreObjects.firstNonNull(token, "");
+    this.username = MoreObjects.firstNonNull(username, Defaults.DEFAULT_STR);
+    this.token = MoreObjects.firstNonNull(token, Defaults.DEFAULT_STR);
   }
 
   public String getUsername() {
