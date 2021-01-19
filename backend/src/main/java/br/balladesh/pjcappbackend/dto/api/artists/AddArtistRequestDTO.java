@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api.artists;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -8,7 +9,7 @@ public class AddArtistRequestDTO {
 
   public AddArtistRequestDTO(String name)
   {
-    this.name = MoreObjects.firstNonNull(name, "");
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
   }
 
   public String getName() {
@@ -20,7 +21,7 @@ public class AddArtistRequestDTO {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     AddArtistRequestDTO that = (AddArtistRequestDTO) o;
-    return name.equals(that.name);
+    return Objects.equal(this.name, that.name);
   }
 
   @Override

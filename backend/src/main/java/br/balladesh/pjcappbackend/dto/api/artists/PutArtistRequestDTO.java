@@ -1,14 +1,15 @@
 package br.balladesh.pjcappbackend.dto.api.artists;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class PutArtistRequestDTO {
   private final String name;
-  private final int id;
+  private final long id;
 
-  public PutArtistRequestDTO(int id, String name) {
-    this.name = MoreObjects.firstNonNull(name, "");
+  public PutArtistRequestDTO(long id, String name) {
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.id = id;
   }
 
@@ -16,7 +17,7 @@ public class PutArtistRequestDTO {
     return name;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
@@ -25,7 +26,7 @@ public class PutArtistRequestDTO {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     PutArtistRequestDTO that = (PutArtistRequestDTO) o;
-    return id == that.id && name.equals(that.name);
+    return id == that.id && Objects.equal(this.name, that.name);
   }
 
   @Override
