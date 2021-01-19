@@ -1,25 +1,18 @@
 package br.balladesh.pjcappbackend.entity;
 
+import br.balladesh.pjcappbackend.utilities.Defaults;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity(name = "artists")
 public class ArtistEntity {
-  public ArtistEntity() {
-    this.name = "";
-    this.albums = new ArrayList<>();
-  }
-
-  public ArtistEntity(String name, List<AlbumEntity> album) {
-    this.name = name == null ? "" : name;
-    this.albums = album == null ? new ArrayList<>() : album;
-  }
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -28,7 +21,23 @@ public class ArtistEntity {
   private String name;
 
   @OneToMany(mappedBy = "artist")
-  private List<AlbumEntity> albums;
+  private final List<AlbumEntity> albums;
+
+  public ArtistEntity() {
+    this.name = Defaults.DEFAULT_STR;
+    this.albums = Lists.newArrayList();
+  }
+
+  public ArtistEntity(String name, List<AlbumEntity> album) {
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
+    this.albums = MoreObjects.firstNonNull(album, Lists.newArrayList());
+  }
+
+  public ArtistEntity(Long id, String name, List<AlbumEntity> album) {
+    this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
+    this.albums = MoreObjects.firstNonNull(album, Lists.newArrayList());
+  }
 
   public long getId() {
     return id;
@@ -39,7 +48,7 @@ public class ArtistEntity {
   }
 
   public void setName(String name) {
-    this.name = name;
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
   }
 
   public List<AlbumEntity> getAlbums() {
@@ -47,26 +56,26 @@ public class ArtistEntity {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ArtistEntity that = (ArtistEntity) o;
+    return id == that.id
+        && Objects.equal(this.name, that.name)
+        && Objects.equal(this.albums, that.albums);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id, name, albums);
+  }
+
+  @Override
   public String toString() {
-    String str
-        = "{"
-        + "id=%d,"
-        + "name=\"%s\","
-        + "albums=[%s]"
-        + "}";
-
-    StringBuilder albumsStr = new StringBuilder();
-    for(AlbumEntity a : this.albums) {
-      albumsStr.append(a.toString());
-      albumsStr.append(',');
-    }
-    albumsStr.deleteCharAt(albumsStr.length() - 1);
-
-    return String.format(
-        str,
-        this.id,
-        this.name,
-        albumsStr.toString()
-    );
+    return MoreObjects.toStringHelper(this)
+        .add("id", this.id)
+        .add("name", this.name)
+        .add("albums", this.albums)
+        .toString();
   }
 }
