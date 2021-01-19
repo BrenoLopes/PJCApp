@@ -1,17 +1,13 @@
 package br.balladesh.pjcappbackend.entity.security;
 
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import javax.persistence.*;
 
 @Entity(name="users")
 public class UserEntity {
-  protected UserEntity() {}
-
-  public UserEntity(String name, String email, String password) {
-    this.name = name;
-    this.email = email;
-    this.password = password;
-  }
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -25,6 +21,20 @@ public class UserEntity {
   @Column(nullable = false)
   private String password;
 
+  protected UserEntity() {
+    this.id = Defaults.getDefaultLong();
+    this.name = Defaults.DEFAULT_STR;
+    this.email = Defaults.DEFAULT_STR;
+    this.password = Defaults.DEFAULT_STR;
+  }
+
+  public UserEntity(String name, String email, String password) {
+    this.id = Defaults.getDefaultLong();
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
+    this.email = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
+    this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
+  }
+
   public long getId() {
     return id;
   }
@@ -34,7 +44,7 @@ public class UserEntity {
   }
 
   public void setName(String name) {
-    this.name = name;
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
   }
 
   public String getEmail() {
@@ -42,7 +52,7 @@ public class UserEntity {
   }
 
   public void setEmail(String email) {
-    this.email = email;
+    this.email = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
   }
 
   public String getPassword() {
@@ -50,18 +60,32 @@ public class UserEntity {
   }
 
   public void setPassword(String password) {
-    this.password = password;
+    this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    UserEntity that = (UserEntity) o;
+    return id == that.id
+        && Objects.equal(this.name, that.name)
+        && Objects.equal(this.email, that.email)
+        && Objects.equal(this.password, that.password);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id, name, email, password);
   }
 
   @Override
   public String toString() {
-    String str = "{"
-        + "id=%d,"
-        + "name=\"%s\","
-        + "email=\"%s\","
-        + "password=\"%s\","
-        + "}";
-
-    return String.format(str, this.id, this.name, this.email, this.password);
+    return MoreObjects.toStringHelper(this)
+        .add("id", this.id)
+        .add("name", this.name)
+        .add("email", this.email)
+        .add("password", this.password)
+        .toString();
   }
 }
