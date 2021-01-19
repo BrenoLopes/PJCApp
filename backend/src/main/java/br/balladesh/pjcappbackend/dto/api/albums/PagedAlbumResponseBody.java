@@ -21,6 +21,15 @@ public class PagedAlbumResponseBody {
   }
 
   public PagedAlbumResponseBody(Page<AlbumEntity> pagedAlbumEntity) {
+    if (pagedAlbumEntity == null) {
+      this.albums = ImmutableList.of();
+      this.currentPage = 0;
+      this.totalPages = 0;
+      this.totalItems = 0;
+
+      return;
+    }
+
     this.albums = ImmutableList.copyOf(pagedAlbumEntity.getContent());
     this.currentPage = pagedAlbumEntity.getNumber();
     this.totalItems = pagedAlbumEntity.getTotalElements();
