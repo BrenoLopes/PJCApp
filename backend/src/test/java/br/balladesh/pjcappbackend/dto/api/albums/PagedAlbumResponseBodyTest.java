@@ -2,13 +2,10 @@ package br.balladesh.pjcappbackend.dto.api.albums;
 
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.utilities.Defaults;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

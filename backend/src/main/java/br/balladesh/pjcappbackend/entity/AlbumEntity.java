@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.entity;
 
-import br.balladesh.pjcappbackend.utilities.Defaults;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

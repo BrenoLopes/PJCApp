@@ -1,4 +1,4 @@
-package br.balladesh.pjcappbackend.utilities;
+package br.balladesh.pjcappbackend.utilities.defaults;
 
 public class Defaults {
   public static final String DEFAULT_BOOLEAN = "" + false;

@@ -1,9 +1,8 @@
 package br.balladesh.pjcappbackend.entity;
 
-import br.balladesh.pjcappbackend.utilities.Defaults;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableList;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 

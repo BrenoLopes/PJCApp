@@ -1,6 +1,7 @@
 package br.balladesh.pjcappbackend.config.security.jwt;
 
 import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,10 @@ public class JwtUtilities {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtilities.class);
 
   @Value("${jwt.secret-key}")
-  private String jwtSecret;
+  private String jwtSecret = Defaults.DEFAULT_STR;
 
   @Value("${jwt.expiration}")
-  private int expiration;
+  private int expiration = Defaults.getDefaultInt();
 
   /**
    * Generate a jwt token using the userdetails object inside the authentication object

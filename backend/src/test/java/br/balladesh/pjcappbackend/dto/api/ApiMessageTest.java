@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api;
 
-import br.balladesh.pjcappbackend.utilities.Defaults;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 

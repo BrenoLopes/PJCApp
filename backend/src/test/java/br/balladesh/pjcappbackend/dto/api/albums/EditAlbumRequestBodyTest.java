@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.dto.api.albums;
 
-import br.balladesh.pjcappbackend.utilities.Defaults;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
 import org.junit.jupiter.api.Test;
 
