@@ -14,16 +14,22 @@ public class PagedArtistResponseBody {
   public final long totalItems;
 
   public PagedArtistResponseBody(List<ArtistEntity> artists, int currentPage, long totalItems, int totalPages) {
-    this.artists = MoreObjects.firstNonNull(
-        ImmutableList.copyOf(artists),
-        ImmutableList.of()
-    );
+    this.artists = artists == null ? ImmutableList.of() : ImmutableList.copyOf(artists);
     this.currentPage = currentPage;
     this.totalPages = totalPages;
     this.totalItems = totalItems;
   }
 
   public PagedArtistResponseBody(Page<ArtistEntity> pagedArtistsEntity) {
+    if (pagedArtistsEntity == null) {
+      this.artists = ImmutableList.of();
+      this.currentPage = 0;
+      this.totalPages = 1;
+      this.totalItems = 0;
+
+      return;
+    }
+
     this.artists = ImmutableList.copyOf(pagedArtistsEntity.getContent());
     this.currentPage = pagedArtistsEntity.getNumber();
     this.totalItems = pagedArtistsEntity.getTotalElements();
