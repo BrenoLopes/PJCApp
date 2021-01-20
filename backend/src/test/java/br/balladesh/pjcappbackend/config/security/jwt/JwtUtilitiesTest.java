@@ -105,16 +105,16 @@ class JwtUtilitiesTest {
 
     Mockito.when(this.authentication.getPrincipal()).thenReturn(userCredentials);
 
-    String token = this.jwtUtilities.generateJwtToken(this.authentication);
-    assertSame(JwtStatus.VALID, this.jwtUtilities.checkJwtStatus(token));
-
-    Thread.sleep(this.expiration + 100);
-    assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(token));
-
-    token = "InvalidToken";
+    String token = "InvalidToken";
     assertSame(JwtStatus.CORRUPTED, this.jwtUtilities.checkJwtStatus(token));
 
     token = "";
     assertSame(JwtStatus.CORRUPTED, this.jwtUtilities.checkJwtStatus(token));
+
+    token = this.jwtUtilities.generateJwtToken(this.authentication);
+    assertSame(JwtStatus.VALID, this.jwtUtilities.checkJwtStatus(token));
+
+    Thread.sleep(this.expiration + 100);
+    assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(token));
   }
 }
