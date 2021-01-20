@@ -7,12 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
 
-@Component
 public class JwtUtilities {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtilities.class);
 
@@ -34,7 +32,7 @@ public class JwtUtilities {
   }
 
   /**
-   * Generate a jwt token using an expired jwt string while using the claims store in the
+   * Generate a jwt token using an expired jwt string while using the claims stored in the
    * expired jwt string
    *
    * @param claims Claims stored inside an expired jwt token
@@ -73,6 +71,8 @@ public class JwtUtilities {
           .getSubject();
 
       username = Optional.of(subject);
+    } catch (ExpiredJwtException e) {
+      username = Optional.of(e.getClaims().getSubject());
     } catch(Exception e) {
       username = Optional.empty();
     }
