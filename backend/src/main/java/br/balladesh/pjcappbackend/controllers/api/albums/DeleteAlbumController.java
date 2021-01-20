@@ -1,18 +1,18 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
 import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
-import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.controllers.exceptions.NotFoundException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.minio.DeleteFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import br.balladesh.pjcappbackend.services.MinIOEndpoint;
-import br.balladesh.pjcappbackend.utilities.errors.HttpException;
-import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
+import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
+import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
+import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,8 +37,18 @@ public class DeleteAlbumController {
 
   @DeleteMapping
   public ResponseEntity<MessageResponse> deleteAlbum(@RequestParam Optional<Long> id) {
+    if(NonNull.withParams(this.albumRepository, this.endpoint).check()) {
+      this.logger.error("DeleteAlbumController::deleteAlbum Required constructors was not autowired.");
+      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    HttpStatus status;
+
     try {
-      AlbumEntity album = this.findAlbum(this.getId(id));
+      long _id = id.orElseThrow(BadRequestException::new);
+
+      AlbumEntity album = this.albumRepository.findById(_id)
+          .orElseThrow(NotFoundException::new);
 
       if (!album.getImage().equals("")) {
         DeleteFromMinIOCommand deleter = new DeleteFromMinIOCommand(album.getImage(), this.endpoint);
@@ -47,27 +57,15 @@ public class DeleteAlbumController {
 
       this.albumRepository.delete(album);
 
-      return ResponseEntity.ok(
-          new MessageResponse("The album was deleted successfully.")
-      );
+      status = HttpStatus.OK;
     } catch (BadRequestException e) {
-      return this.buildResponse(new BadRequestException("The id was not set!"));
+      status = HttpStatus.BAD_REQUEST;
     } catch (NotFoundException e) {
-      return this.buildResponse(new NotFoundException("This album doesn't exist!"));
+      status = HttpStatus.NOT_FOUND;
     } catch (Exception e) {
-      return this.buildResponse(new InternalServerErrorException());
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
-  }
 
-  private long getId(Optional<Long> id) throws BadRequestException {
-    return id.orElseThrow(BadRequestException::new);
-  }
-
-  private AlbumEntity findAlbum(long id) throws NotFoundException {
-    return this.albumRepository.findById(id)
-        .orElseThrow(NotFoundException::new);
-  }
-  private ResponseEntity<MessageResponse> buildResponse(HttpException e) {
-    return new CreateResponseFromExceptionFactory(e).create().getData();
+    return ResponseCreator.create(status);
   }
 }

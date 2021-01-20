@@ -1,7 +1,7 @@
 package br.balladesh.pjcappbackend.minio;
 
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
-import br.balladesh.pjcappbackend.services.MinIOEndpoint;
+import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.commands.Command;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;

@@ -8,16 +8,18 @@ import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.minio.DeleteFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
-import br.balladesh.pjcappbackend.services.MinIOEndpoint;
+import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.minio.UploadToMinIOCommand;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
-import br.balladesh.pjcappbackend.controllers.exceptions.NotFoundException;
-import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
+import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
+import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,7 +34,6 @@ public class PutEditAlbumController {
   private final AlbumRepository albumRepository;
   private final ArtistRepository artistRepository;
   private final MinIOEndpoint endpoint;
-
   private final Logger logger = LoggerFactory.getLogger(PutEditAlbumController.class);
 
   @Autowired
@@ -48,15 +49,16 @@ public class PutEditAlbumController {
 
   @PutMapping
   public ResponseEntity<MessageResponse> editAlbum(EditAlbumRequestBody data) {
-    // Check if the album exists
-    Optional<AlbumEntity> _album = this.albumRepository.findById(data.getAlbumId());
-    if (!_album.isPresent()) {
-      String message = "Album not found!";
-      return new CreateResponseFromExceptionFactory(new NotFoundException(message))
-          .create().getData();
+    if(NonNull.withParams(this.albumRepository, this.artistRepository, this.endpoint).check()){
+      this.logger.error("PutEditAlbumController::editAlbum Required constructors was not autowired.");
+      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Unbox the entity
+    // Check if the album exists
+    Optional<AlbumEntity> _album = this.albumRepository.findById(data.getAlbumId());
+    if (!_album.isPresent())
+      return ResponseCreator.create("There is no album found with this id.", HttpStatus.NOT_FOUND);
+
     AlbumEntity album = _album.get();
 
     try {
@@ -66,21 +68,16 @@ public class PutEditAlbumController {
 
       this.albumRepository.save(album);
 
-      return ResponseEntity.ok(
-          new MessageResponse("The album was updated successfully.")
-      );
+      return ResponseCreator.create(HttpStatus.OK);
     } catch (HttpException e) {
-      return new CreateResponseFromExceptionFactory(e)
-          .create().getData();
+      return ResponseCreator.create(e.getStatusCode());
     } catch (Exception e) {
-      return new CreateResponseFromExceptionFactory(
-          new InternalServerErrorException()
-      ).create().getData();
+      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   private void updateAlbumName(EditAlbumRequestBody data, AlbumEntity entity) {
-    if (data.getName().equals(""))
+    if (data.getName().equals(Defaults.DEFAULT_STR))
       return;
 
     entity.setName(data.getName());
@@ -110,7 +107,7 @@ public class PutEditAlbumController {
   }
 
   private void updateAlbumArtist(EditAlbumRequestBody data, AlbumEntity entity) throws HttpException {
-    if (data.getArtistId() == Long.MIN_VALUE)
+    if (data.getArtistId() == Defaults.getDefaultLong())
       return;
 
     // Check if the artist exist

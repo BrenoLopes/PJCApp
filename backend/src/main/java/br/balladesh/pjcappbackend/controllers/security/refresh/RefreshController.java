@@ -1,14 +1,15 @@
 package br.balladesh.pjcappbackend.controllers.security.refresh;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
-import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
 import br.balladesh.pjcappbackend.dto.security.JwtJsonResponse;
 
-import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
+import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
+import com.google.common.base.MoreObjects;
 import io.jsonwebtoken.impl.DefaultClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -33,44 +33,33 @@ public class RefreshController {
 
   @GetMapping("/refresh")
   public ResponseEntity<?> refreshJwtToken(HttpServletRequest request) {
-    final Optional<Boolean> jwtIsAlreadyValid = Optional.ofNullable((Boolean) request.getAttribute("jwt_is_valid"));
+    try {
+      boolean isJwtStillValid = (boolean) MoreObjects.firstNonNull(request.getAttribute("jwt_is_valid"), false);
 
-    if(jwtIsAlreadyValid.isPresent()) {
+      if (!isJwtStillValid)
+        return this.showNewRefreshedJwtToken(request);
+
       return this.showCurrentJwtToken(request);
-    } else {
-      return this.showNewRefreshedJwtToken(request);
+    } catch (Exception e) {
+      logger.error("RefreshController::refreshJwtToken failed to refresh jwt token. Error: {}", e.getMessage());
+      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  private ResponseEntity<?> showCurrentJwtToken(HttpServletRequest request) {
-    final Optional<String> jwtToken = Optional.ofNullable(request.getAttribute("jwt_token").toString());
-    Optional<String> username = Optional.ofNullable(request.getAttribute("username").toString());
+  private ResponseEntity<?> showCurrentJwtToken(HttpServletRequest request) throws NullPointerException {
+    final String token = request.getAttribute("jwt_token").toString();
+    String username = request.getAttribute("username").toString();
 
-    if (!jwtToken.isPresent() || !username.isPresent()) {
-      logger.error("RefreshController::showCurrentJwtToken The token should be valid and be reused, but it's null.");
-      return this.showInternalServerError();
-    }
-
-    return ResponseEntity.ok(new JwtJsonResponse(username.get(), jwtToken.get()));
+    return ResponseEntity.ok(new JwtJsonResponse(username, token));
   }
 
-  private ResponseEntity<?> showNewRefreshedJwtToken(HttpServletRequest request) {
+  private ResponseEntity<?> showNewRefreshedJwtToken(HttpServletRequest request) throws NullPointerException, ClassCastException {
     final DefaultClaims claims = (DefaultClaims) request.getAttribute("claims");
 
     // Get the username from the claims that was injected during the auth token filter if the token is invalid
-    Optional<String> username = Optional.ofNullable(claims.get("sub").toString());
+    String username = claims.get("sub").toString();
 
-    if(!username.isPresent()) {
-      logger.error("RefreshController::showNewRefreshedJwtToken The token should be valid and be reused, but it's null.");
-      return this.showInternalServerError();
-    }
-
-    final String token = this.jwtUtils.generateRefreshToken(username.get());
-    return ResponseEntity.ok(new JwtJsonResponse(username.get(), token));
-  }
-
-  private ResponseEntity<?> showInternalServerError() {
-    return new CreateResponseFromExceptionFactory(new InternalServerErrorException("An error happened inside the server"))
-        .create().getData();
+    final String token = this.jwtUtils.generateRefreshToken(username);
+    return ResponseEntity.ok(new JwtJsonResponse(username, token));
   }
 }

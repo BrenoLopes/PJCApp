@@ -4,12 +4,12 @@ import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.minio.GetFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import br.balladesh.pjcappbackend.services.MinIOEndpoint;
+import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
-import br.balladesh.pjcappbackend.utilities.factories.CreateResponseFromExceptionFactory;
-import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
-import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
+import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
+import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,11 @@ public class GetFilterAlbumsController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "ASC") String direction
   ) {
+    if(NonNull.withParams(this.albumRepository, this.endpoint).check()) {
+      this.logger.error("GetFilterAlbumsController::filterAlbumBy Required constructors was not autowired.");
+      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     try {
       Sort sort = Sort.by("name");
       if (direction.equalsIgnoreCase("desc"))
@@ -80,9 +86,7 @@ public class GetFilterAlbumsController {
         e.getMessage()
     );
 
-    return new CreateResponseFromExceptionFactory(
-        new BadRequestException("Could not parse your request because the parameters is invalid!")
-    ).create().getData();
+    return ResponseCreator.create(HttpStatus.BAD_REQUEST);
   }
 
   private ResponseEntity<?> showInternalServerErrorException(Exception e) {
@@ -91,8 +95,6 @@ public class GetFilterAlbumsController {
         e.getMessage()
     );
 
-    return new CreateResponseFromExceptionFactory(
-        new InternalServerErrorException("An error occurred in the server while trying to parse your request.")
-    ).create().getData();
+    return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
