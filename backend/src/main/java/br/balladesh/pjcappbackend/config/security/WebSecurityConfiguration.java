@@ -2,6 +2,7 @@ package br.balladesh.pjcappbackend.config.security;
 
 import br.balladesh.pjcappbackend.config.security.jwt.AuthEntryPoint;
 import br.balladesh.pjcappbackend.config.security.jwt.AuthTokenFilter;
+import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.config.security.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
     return new AuthTokenFilter();
+  }
+
+  @Bean
+  public JwtUtilities createJwtUtilities() {
+    return new JwtUtilities();
   }
 
   @Override
