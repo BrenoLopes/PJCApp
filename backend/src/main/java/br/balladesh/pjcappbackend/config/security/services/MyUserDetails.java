@@ -1,13 +1,15 @@
 package br.balladesh.pjcappbackend.config.security.services;
 
 import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * <p>Simple implementation of these class for easily storing this information inside
@@ -49,10 +51,10 @@ public class MyUserDetails implements UserDetails {
       String password,
       Collection<? extends GrantedAuthority> authorities
   ) {
-    this.id = id;
-    this.username = email;
-    this.email = email;
-    this.password = password;
+    this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
+    this.username = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
+    this.email = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
+    this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
     this.authorities = new ArrayList<>();
   }
 
@@ -120,7 +122,12 @@ public class MyUserDetails implements UserDetails {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    MyUserDetails user = (MyUserDetails) o;
-    return Objects.equals(id, user.id);
+    MyUserDetails that = (MyUserDetails) o;
+
+    return Objects.equal(this.id, that.id)
+        && Objects.equal(this.username, that.username)
+        && Objects.equal(this.authorities, that.authorities)
+        && Objects.equal(this.email, that.email)
+        && Objects.equal(this.password, that.password);
   }
 }
