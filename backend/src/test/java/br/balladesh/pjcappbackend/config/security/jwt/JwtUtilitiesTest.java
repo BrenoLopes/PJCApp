@@ -110,7 +110,7 @@ class JwtUtilitiesTest {
     token = "";
     assertSame(JwtStatus.CORRUPTED, this.jwtUtilities.checkJwtStatus(token));
 
-    this.jwtUtilities.setExpiration(50L);
+    this.jwtUtilities.setExpiration(0L);
     token = this.jwtUtilities.generateJwtToken(this.authentication);
     assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(token));
 
