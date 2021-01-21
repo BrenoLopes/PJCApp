@@ -25,11 +25,8 @@ class JwtUtilitiesTest {
   @Mock
   Authentication authentication;
 
-  @Value("${jwt.expiration}")
-  long expiration;
-
   @Test
-  void testJwtTokenGeneration() {
+  void testGenerateJwtTokenWithAuthentication() {
     MyUserDetails userCredentials = new MyUserDetails(
         1L,
         "ohno@ohno.com",
@@ -41,8 +38,31 @@ class JwtUtilitiesTest {
     Mockito.when(this.authentication.getPrincipal()).thenReturn(userCredentials);
     String token = this.jwtUtilities.generateJwtToken(this.authentication);
 
-    assertNotNull(token);
-    assertNotEquals(token, "");
+    if (token == null || token.equals(""))
+      fail();
+
+    assertSame(this.jwtUtilities.checkJwtStatus(token), JwtStatus.VALID);
+  }
+
+  @Test
+  void testGenerateRefreshJwtToken() {
+    // Lower the expiration time
+    this.jwtUtilities.setExpiration(10);
+
+    // Generate first token
+    String firstToken = this.jwtUtilities.generateJwtToken("ohno@ohno.com");
+    JwtStatus status = this.jwtUtilities.checkJwtStatus(firstToken);
+
+    assertSame(JwtStatus.EXPIRED, status);
+
+    this.jwtUtilities.setExpiration(6000);
+
+    // Generate second token
+    String secondToken = this.jwtUtilities.generateJwtToken("ohno@ohno.com");
+    status = this.jwtUtilities.checkJwtStatus(secondToken);
+
+    assertSame(JwtStatus.VALID, status);
+    assertNotEquals(firstToken, secondToken);
   }
 
   @Test
@@ -65,26 +85,6 @@ class JwtUtilitiesTest {
   }
 
   @Test
-  void testRefreshJwtToken() throws InterruptedException {
-    MyUserDetails userCredentials = new MyUserDetails(
-        1L,
-        "ohno@ohno.com",
-        "ohno@ohno.com",
-        "123456",
-        Lists.newArrayList()
-    );
-    Mockito.when(this.authentication.getPrincipal()).thenReturn(userCredentials);
-
-    String beforeToken = this.jwtUtilities.generateJwtToken(this.authentication);
-
-    Thread.sleep(this.expiration + 400);
-    assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(beforeToken));
-
-    String refreshToken = this.jwtUtilities.generateRefreshToken("ohno@ohno.com");
-    assertSame(JwtStatus.VALID, this.jwtUtilities.checkJwtStatus(refreshToken));
-  }
-
-  @Test
   void testExtractTokenFromHeader() {
     String token = "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2MTExNzc2MDAsImV4cCI6MTYxMTE3NzYwMCwic3ViIjoib2hub0BvaG5vLmNvbSJ9.-Ikj7BiZ_SpPPhEfrRHEulPFNBy69UU120f5bUhJfPMpYr9swkbE-FspZ6D0ij7Lrt8DQe6FMkH-b0pDsuGp2Q";
     String header = "Bearer " + token;
@@ -94,7 +94,7 @@ class JwtUtilitiesTest {
   }
 
   @Test
-  void testValidJwtToken() throws InterruptedException {
+  void testValidJwtToken() {
     MyUserDetails userCredentials = new MyUserDetails(
         1L,
         "ohno@ohno.com",
@@ -102,7 +102,6 @@ class JwtUtilitiesTest {
         "123456",
         Lists.newArrayList()
     );
-
     Mockito.when(this.authentication.getPrincipal()).thenReturn(userCredentials);
 
     String token = "InvalidToken";
@@ -111,10 +110,12 @@ class JwtUtilitiesTest {
     token = "";
     assertSame(JwtStatus.CORRUPTED, this.jwtUtilities.checkJwtStatus(token));
 
+    this.jwtUtilities.setExpiration(50);
+    token = this.jwtUtilities.generateJwtToken(this.authentication);
+    assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(token));
+
+    this.jwtUtilities.setExpiration(5000);
     token = this.jwtUtilities.generateJwtToken(this.authentication);
     assertSame(JwtStatus.VALID, this.jwtUtilities.checkJwtStatus(token));
-
-    Thread.sleep(this.expiration + 100);
-    assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(token));
   }
 }

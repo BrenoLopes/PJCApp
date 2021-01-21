@@ -59,7 +59,7 @@ public class RefreshController {
     // Get the username from the claims that was injected during the auth token filter if the token is invalid
     String username = claims.get("sub").toString();
 
-    final String token = this.jwtUtils.generateRefreshToken(username);
+    final String token = this.jwtUtils.generateJwtToken(username);
     return ResponseEntity.ok(new JwtJsonResponse(username, token));
   }
 }

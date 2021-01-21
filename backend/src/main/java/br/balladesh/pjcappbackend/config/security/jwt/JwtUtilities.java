@@ -18,7 +18,7 @@ public class JwtUtilities {
   private String jwtSecret = Defaults.DEFAULT_STR;
 
   @Value("${jwt.expiration}")
-  private int expiration = Defaults.getDefaultInt();
+  private long expiration = Defaults.getDefaultLong();
 
   /**
    * Generate a jwt token using the userdetails object inside the authentication object
@@ -31,17 +31,17 @@ public class JwtUtilities {
     return this.buildJwtToken(userDetails.getUsername());
   }
 
-  /**
-   * Generate a jwt token using an expired jwt string while using the claims stored in the
-   * expired jwt string
-   *
-   * @param claims Claims stored inside an expired jwt token
-   * @param username The user's email address that owns the token
-   * @return Jwt string
-   */
-  public String generateRefreshToken(Map<String, Object> claims, String username) {
-    return this.buildJwtToken(claims, username);
-  }
+//  /**
+//   * Generate a jwt token using an expired jwt string while using the claims stored in the
+//   * expired jwt string
+//   *
+//   * @param claims Claims stored inside an expired jwt token
+//   * @param username The user's email address that owns the token
+//   * @return Jwt string
+//   */
+//  public String generateRefreshToken(Map<String, Object> claims, String username) {
+//    return this.buildJwtToken(claims, username);
+//  }
 
   /**
    * Generate a jwt token using an expired jwt string by using only the user's email address
@@ -49,7 +49,7 @@ public class JwtUtilities {
    * @param username The user's email address that owns the token
    * @return Jwt string
    */
-  public String generateRefreshToken(String username) {
+  public String generateJwtToken(String username) {
     return this.buildJwtToken(username);
   }
 
@@ -136,6 +136,10 @@ public class JwtUtilities {
     return Optional.empty();
   }
 
+  protected void setExpiration(long milliseconds) {
+    this.expiration = milliseconds;
+  }
+
   /**
    * Create a jwt token using an email address
    *
@@ -143,8 +147,13 @@ public class JwtUtilities {
    * @return jwt token
    */
   private String buildJwtToken(String username) {
-    return this.loadBuilder()
-        .setSubject(username)
+    return Jwts.builder()
+        .setIssuedAt(new Date())
+        .setExpiration(
+            new Date(System.currentTimeMillis() + this.expiration)
+        )
+        .signWith(SignatureAlgorithm.HS512, this.jwtSecret)
+        .setSubject(String.valueOf(username))
         .compact();
   }
 
@@ -158,23 +167,28 @@ public class JwtUtilities {
    * @return jwt token
    */
   private String buildJwtToken(Map<String, Object> claims, String username) {
-    return this.loadBuilder()
-        .setClaims(claims)
-        .setSubject(username)
-        .compact();
-  }
-
-  /**
-   * A builder to build the jwt builder to build the token and make the code DRY. LOL
-   *
-   * @return The JwtBuilder for method chaining.
-   */
-  private JwtBuilder loadBuilder() {
     return Jwts.builder()
         .setIssuedAt(new Date())
         .setExpiration(
             new Date(System.currentTimeMillis() + this.expiration)
         )
-        .signWith(SignatureAlgorithm.HS512, this.jwtSecret);
+        .signWith(SignatureAlgorithm.HS512, this.jwtSecret)
+        .setClaims(claims)
+        .setSubject(String.valueOf(username))
+        .compact();
   }
+
+//  /**
+//   * A builder to build the jwt builder to build the token and make the code DRY. LOL
+//   *
+//   * @return The JwtBuilder for method chaining.
+//   */
+//  private JwtBuilder loadBuilder() {
+//    return Jwts.builder()
+//        .setIssuedAt(new Date())
+//        .setExpiration(
+//            new Date(System.currentTimeMillis() + this.expiration)
+//        )
+//        .signWith(SignatureAlgorithm.HS512, this.jwtSecret);
+//  }
 }
