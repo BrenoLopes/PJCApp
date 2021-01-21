@@ -46,14 +46,14 @@ public class RefreshController {
     }
   }
 
-  private ResponseEntity<?> showCurrentJwtToken(HttpServletRequest request) throws NullPointerException {
+  private ResponseEntity<JwtJsonResponse> showCurrentJwtToken(HttpServletRequest request) throws NullPointerException {
     final String token = request.getAttribute("jwt_token").toString();
     String username = request.getAttribute("username").toString();
 
     return ResponseEntity.ok(new JwtJsonResponse(username, token));
   }
 
-  private ResponseEntity<?> showNewRefreshedJwtToken(HttpServletRequest request) throws NullPointerException, ClassCastException {
+  private ResponseEntity<JwtJsonResponse> showNewRefreshedJwtToken(HttpServletRequest request) throws NullPointerException, ClassCastException {
     final DefaultClaims claims = (DefaultClaims) request.getAttribute("claims");
 
     // Get the username from the claims that was injected during the auth token filter if the token is invalid
