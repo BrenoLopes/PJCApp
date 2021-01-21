@@ -1,11 +1,11 @@
 package br.balladesh.pjcappbackend.controllers.security.signup;
 
+import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.UserSignUpRequest;
 import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.security.UserRepository;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.Result;
-
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
 import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class SignUpController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@RequestBody UserSignUpRequest request) {
+  public ResponseEntity<MessageResponse> registerUser(@RequestBody UserSignUpRequest request) {
     if (NonNull.withParams(this.passwordEncoder, this.userRepository).check()) {
       this.logger.error("SignUpController::registerUser Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
