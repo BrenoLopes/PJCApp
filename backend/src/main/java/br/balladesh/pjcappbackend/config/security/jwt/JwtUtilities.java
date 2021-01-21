@@ -136,7 +136,7 @@ public class JwtUtilities {
     return Optional.empty();
   }
 
-  protected void setExpiration(long milliseconds) {
+  protected void setExpiration(Long milliseconds) {
     this.expiration = milliseconds;
   }
 

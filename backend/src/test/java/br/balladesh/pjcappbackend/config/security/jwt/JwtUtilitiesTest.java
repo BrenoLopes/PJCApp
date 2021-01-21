@@ -47,7 +47,7 @@ class JwtUtilitiesTest {
   @Test
   void testGenerateRefreshJwtToken() {
     // Lower the expiration time
-    this.jwtUtilities.setExpiration(10);
+    this.jwtUtilities.setExpiration(10L);
 
     // Generate first token
     String firstToken = this.jwtUtilities.generateJwtToken("ohno@ohno.com");
@@ -55,7 +55,7 @@ class JwtUtilitiesTest {
 
     assertSame(JwtStatus.EXPIRED, status);
 
-    this.jwtUtilities.setExpiration(6000);
+    this.jwtUtilities.setExpiration(6000L);
 
     // Generate second token
     String secondToken = this.jwtUtilities.generateJwtToken("ohno@ohno.com");
@@ -110,11 +110,11 @@ class JwtUtilitiesTest {
     token = "";
     assertSame(JwtStatus.CORRUPTED, this.jwtUtilities.checkJwtStatus(token));
 
-    this.jwtUtilities.setExpiration(50);
+    this.jwtUtilities.setExpiration(50L);
     token = this.jwtUtilities.generateJwtToken(this.authentication);
     assertSame(JwtStatus.EXPIRED, this.jwtUtilities.checkJwtStatus(token));
 
-    this.jwtUtilities.setExpiration(5000);
+    this.jwtUtilities.setExpiration(5000L);
     token = this.jwtUtilities.generateJwtToken(this.authentication);
     assertSame(JwtStatus.VALID, this.jwtUtilities.checkJwtStatus(token));
   }
