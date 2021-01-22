@@ -5,6 +5,7 @@ import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.commands.Command;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import io.minio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,10 @@ public class UploadToMinIOCommand implements Command<String, HttpException> {
     this.file = file;
     this.endpoint = endpoint;
 
-    if (!file.isEmpty())
-      this.fileName = String.format("%d-%s", System.currentTimeMillis(), this.file.getOriginalFilename());
-    else
+    if (file == null || file.isEmpty())
       this.fileName = "";
+    else
+      this.fileName = String.format("%d-%s", System.currentTimeMillis(), this.file.getOriginalFilename());
   }
 
   public String getFileName() {
@@ -33,6 +34,11 @@ public class UploadToMinIOCommand implements Command<String, HttpException> {
 
   @Override
   public Result<String, HttpException> execute() {
+    if(HasNull.withParams(this.endpoint, this.file).check()) {
+      this.logger.error("UploadToMinIOCommand::execute Endpoint or the object name is null!");
+      return Result.fromError(new InternalServerErrorException());
+    }
+
     try {
       MinioClient minioClient = MinioClient.builder()
           .endpoint(this.endpoint.getEndpoint())

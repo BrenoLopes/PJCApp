@@ -5,6 +5,7 @@ import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.commands.Command;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
@@ -24,6 +25,11 @@ public class DeleteFromMinIOCommand implements Command<Boolean, HttpException> {
 
   @Override
   public Result<Boolean, HttpException> execute() {
+    if(HasNull.withParams(this.endpoint, this.objectName).check()) {
+      this.logger.error("DeleteFromMinIOCommand::execute Endpoint or the object name is null!");
+      return Result.fromError(new InternalServerErrorException());
+    }
+
     try {
       // Create a client connection to the server
       MinioClient minioClient = MinioClient.builder()

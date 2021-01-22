@@ -1,9 +1,11 @@
 package br.balladesh.pjcappbackend.minio;
 
 import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.commands.Command;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import io.minio.BucketExistsArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
@@ -26,6 +28,11 @@ public class GetFromMinIOCommand implements Command<String, HttpException> {
 
   @Override
   public Result<String, HttpException> execute() {
+    if(HasNull.withParams(this.endpoint, this.file).check()) {
+      this.logger.error("GetFromMinIOCommand::execute Endpoint or the object name is null!");
+      return Result.fromError(new InternalServerErrorException());
+    }
+
     try {
       if (this.file.equals(""))
         return this.returnEmptyUrl();
