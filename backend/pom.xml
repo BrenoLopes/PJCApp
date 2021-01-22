@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.balladesh</groupId>
-	<artifactId>jpa-jwt-test</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>jpa-jwt-test</name>
-	<description>Demo project for Spring Boot</description>
+	<artifactId>pjc-app</artifactId>
+	<version>0.0.1</version>
+	<name>pjc-app</name>
+	<description>An application to register a group of artist and their album metadata.</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -58,6 +58,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>8.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>28.0-jre</version>
 		</dependency>
 	</dependencies>
 	<build>
