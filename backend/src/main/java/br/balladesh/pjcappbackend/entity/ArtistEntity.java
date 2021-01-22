@@ -20,7 +20,7 @@ public class ArtistEntity {
   @Column(nullable = false, unique = true)
   private String name;
 
-  @OneToMany(mappedBy = "artist")
+  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "artist")
   private final List<AlbumEntity> albums;
 
   public ArtistEntity() {
