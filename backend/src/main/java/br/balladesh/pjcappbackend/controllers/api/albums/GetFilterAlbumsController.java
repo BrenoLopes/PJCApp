@@ -8,7 +8,7 @@ import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class GetFilterAlbumsController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "ASC") String direction
   ) {
-    if(NonNull.withParams(this.albumRepository, this.endpoint).check()) {
+    if(HasNull.withParams(this.albumRepository, this.endpoint).check()) {
       this.logger.error("GetFilterAlbumsController::filterAlbumBy Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

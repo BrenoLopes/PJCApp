@@ -5,7 +5,7 @@ import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
 import br.balladesh.pjcappbackend.dto.security.JwtJsonResponse;
 import br.balladesh.pjcappbackend.dto.security.UserLoginRequest;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class LoginController {
 
   @PostMapping("/login")
   public ResponseEntity<?> authUser(@RequestBody UserLoginRequest loginRequest) {
-    if( NonNull.withParams(this.authenticationManager, this.jwtUtils).check() ) {
+    if( HasNull.withParams(this.authenticationManager, this.jwtUtils).check() ) {
       this.logger.error("LoginController::authUser Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

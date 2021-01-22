@@ -5,7 +5,7 @@ import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,7 +29,7 @@ public class DeleteArtistController {
 
   @DeleteMapping
   public ResponseEntity<MessageResponse> deleteArtist(@RequestParam(defaultValue = Defaults.DEFAULT_LONG) long id) {
-    if(NonNull.withParams(this.artistRepository).check()){
+    if(HasNull.withParams(this.artistRepository).check()){
       this.logger.error("DeleteArtistController::deleteArtist Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -15,7 +15,7 @@ import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class PutEditAlbumController {
 
   @PutMapping
   public ResponseEntity<MessageResponse> editAlbum(EditAlbumRequestBody data) {
-    if(NonNull.withParams(this.albumRepository, this.artistRepository, this.endpoint).check()){
+    if(HasNull.withParams(this.albumRepository, this.artistRepository, this.endpoint).check()){
       this.logger.error("PutEditAlbumController::editAlbum Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

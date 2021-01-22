@@ -7,7 +7,7 @@ import br.balladesh.pjcappbackend.repository.security.UserRepository;
 import br.balladesh.pjcappbackend.utilities.errors.HttpException;
 import br.balladesh.pjcappbackend.utilities.Result;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class SignUpController {
 
   @PostMapping("/signup")
   public ResponseEntity<MessageResponse> registerUser(@RequestBody UserSignUpRequest request) {
-    if (NonNull.withParams(this.passwordEncoder, this.userRepository).check()) {
+    if (HasNull.withParams(this.passwordEncoder, this.userRepository).check()) {
       this.logger.error("SignUpController::registerUser Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

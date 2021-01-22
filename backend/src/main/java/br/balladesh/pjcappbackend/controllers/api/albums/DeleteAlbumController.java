@@ -8,7 +8,7 @@ import br.balladesh.pjcappbackend.minio.DeleteFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class DeleteAlbumController {
 
   @DeleteMapping
   public ResponseEntity<MessageResponse> deleteAlbum(@RequestParam Optional<Long> id) {
-    if(NonNull.withParams(this.albumRepository, this.endpoint).check()) {
+    if(HasNull.withParams(this.albumRepository, this.endpoint).check()) {
       this.logger.error("DeleteAlbumController::deleteAlbum Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

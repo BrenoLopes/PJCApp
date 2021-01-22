@@ -4,7 +4,7 @@ import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.NonNull;
+import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -34,7 +34,7 @@ public class GetAllArtistsController {
       @RequestParam(defaultValue = "10") int pagesize,
       @RequestParam(defaultValue = "ASC") String direction
   ) {
-    if(NonNull.withParams(this.artistRepository).check()){
+    if(HasNull.withParams(this.artistRepository).check()){
       this.logger.error("GetAllArtistsController::getAllArtists Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }

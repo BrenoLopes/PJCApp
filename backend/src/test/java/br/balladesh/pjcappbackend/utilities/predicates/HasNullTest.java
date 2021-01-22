@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NonNullTest {
+class HasNullTest {
 
   @Test
   public void withoutNull() {
     String var1 = "1";
     String var2 = "2";
 
-    assertFalse(NonNull.withParams(var1, var2).check());
+    assertFalse(HasNull.withParams(var1, var2).check());
   }
 
   @Test
@@ -19,7 +19,7 @@ class NonNullTest {
     String var1 = "1";
     String var2 = null;
 
-    assertTrue(NonNull.withParams(var1, var2).check());
+    assertTrue(HasNull.withParams(var1, var2).check());
   }
 
 }
