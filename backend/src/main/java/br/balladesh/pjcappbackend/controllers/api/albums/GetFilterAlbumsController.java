@@ -55,7 +55,7 @@ public class GetFilterAlbumsController {
 
     try {
       Sort sort = Sort.by("name");
-      if (direction.equalsIgnoreCase("desc"))
+      if (!direction.equalsIgnoreCase("asc"))
         sort = sort.descending();
 
       Pageable pageable = PageRequest.of(page, size, sort);
