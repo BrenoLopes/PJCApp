@@ -39,4 +39,12 @@ class MessageResponseTest {
         "The class must return an empty string in case a null one was used in the constructor."
     );
   }
+
+  @Test
+  void testEquals() {
+    MessageResponse response1 = new MessageResponse("Hiiii");
+    MessageResponse response2 = new MessageResponse("Hiiii");
+
+    assertEquals(response1, response2);
+  }
 }
