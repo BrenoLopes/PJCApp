@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends HttpException {
   public NotFoundException() {
-    super(
-        "Your request couldn't be complete, because the entity was not found!",
-        HttpStatus.NOT_FOUND
-    );
+    super(HttpStatus.NOT_FOUND);
   }
 
   public NotFoundException(String message) {

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class BadRequestException extends HttpException {
   public BadRequestException() {
-    super("The request could not be processed, because the parameters are invalid!", HttpStatus.BAD_REQUEST);
+    super(HttpStatus.BAD_REQUEST);
   }
 
   public BadRequestException(String message) {
