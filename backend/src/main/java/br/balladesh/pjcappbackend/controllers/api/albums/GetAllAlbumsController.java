@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class GetAllAlbumsController {
   private final AlbumRepository albumRepository;
   private final MinIOEndpoint endpoint;
+  private GetFromMinIOCommand command;
 
   private final Logger logger = LoggerFactory.getLogger(GetAllAlbumsController.class);
 
@@ -34,6 +35,13 @@ public class GetAllAlbumsController {
   {
     this.albumRepository = albumRepository;
     this.endpoint = endpoint;
+  }
+
+  protected GetAllAlbumsController(AlbumRepository albumRepository, MinIOEndpoint endpoint, GetFromMinIOCommand command)
+  {
+    this.albumRepository = albumRepository;
+    this.endpoint = endpoint;
+    this.command = command;
   }
 
   @GetMapping("/list")
@@ -69,9 +77,11 @@ public class GetAllAlbumsController {
   }
 
   private AlbumEntity loadMinIOImages(AlbumEntity entity) {
-    Result<String, HttpException> result = new GetFromMinIOCommand(
-        entity.getImage(), this.endpoint
-    ).execute();
+    GetFromMinIOCommand command = this.command == null
+        ? new GetFromMinIOCommand(entity.getImage(), this.endpoint)
+        : this.command;
+
+    Result<String, HttpException> result = command.execute();
 
     String resultData = result.haveData() ? result.getData() : "";
     entity.setImage(resultData);
