@@ -59,7 +59,7 @@ public class PostAddAlbumController {
       return ResponseCreator.create(HttpStatus.CONFLICT);
 
     // Check if the artist exists. This method should not create one.
-    Optional<ArtistEntity> _artist = this.createArtist(data);
+    Optional<ArtistEntity> _artist = this.findArtist(data);
     if (!_artist.isPresent()) {
       String message = "An artist_id or artist_name must exist and not be empty!";
       return ResponseCreator.create(message, HttpStatus.BAD_REQUEST);
@@ -95,7 +95,7 @@ public class PostAddAlbumController {
     }
   }
 
-  private Optional<ArtistEntity> createArtist(AddAlbumRequestBody data) {
+  private Optional<ArtistEntity> findArtist(AddAlbumRequestBody data) {
     if (!data.getArtistName().equals(Defaults.DEFAULT_STR)) {
       String name = data.getArtistName();
       return this.artistRepository.findByName(name);
