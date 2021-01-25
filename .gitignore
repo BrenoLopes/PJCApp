@@ -2,3 +2,4 @@
 /backend/.idea/**
 /backend/target/**
 /backend/*.iml
+/.env
