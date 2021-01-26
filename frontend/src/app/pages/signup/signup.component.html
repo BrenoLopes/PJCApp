@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="form-container">
+    <h1>Cadastrar</h1>
+    <form (ngSubmit)="onSubmit()" [formGroup]="signUpForm">
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Nome"
+          formControlName="name"
+          tabindex="1"
+        >
+        <mat-error>Por favor, coloque um nome!</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Email"
+          formControlName="email"
+          tabindex="1"
+        >
+        <mat-error>Por favor, coloque um email válido!</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Senha"
+          formControlName="password"
+          type="password"
+          tabindex="1"
+        >
+        <mat-error *ngIf="getPassword()?.invalid && getPassword()?.touched">
+          Por favor, coloque uma senha com mais de 8 caracteres!
+        </mat-error>
+      </mat-form-field>
+      <button
+        type="submit"
+        mat-raised-button
+        color="primary"
+        tabindex="1"
+        [disabled]="signUpForm.invalid || signUpForm.disabled"
+      >
+        Cadastrar
+      </button>
+    </form>
+    <p class="after-form">OU</p>
+    <p class="login">
+      <a [routerLink]="'/login'">Fazer login</a>
+    </p>
+  </div>
+</div>
