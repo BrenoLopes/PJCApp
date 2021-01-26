@@ -1,13 +1,45 @@
 version: '3.5'
 
 services:
+  devserver:
+    build:
+      context: ./backend
+      dockerfile: dev.Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DBNAME: ${DB_DBNAME}
+      MINIO_URL: ${MINIO_URL}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
+    volumes:
+      - ./backend:/app
+    command: mvn spring-boot:run
+#    tty: true
+  devfrontend:
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./frontend:/home/app
+      - node_modules:/home/app/node_modules
+    ports:
+      - 4200:4200
+    command: sh -c "npm start"
+    tty: true
   db:
     image: postgres:13
     restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: pjcapp
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DBNAME}
     ports:
       - 5432:5432
     volumes:
@@ -16,8 +48,8 @@ services:
     image: minio/minio:latest
     restart: always
     environment:
-      MINIO_ROOT_USER: AmongUs
-      MINIO_ROOT_PASSWORD: AmongUsRootPassword
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - 9000:9000
     volumes:
@@ -31,3 +63,4 @@ services:
 volumes:
   my_db:
   my_min_io:
+  node_modules:
