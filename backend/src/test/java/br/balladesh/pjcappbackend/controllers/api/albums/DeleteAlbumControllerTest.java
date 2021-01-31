@@ -4,6 +4,7 @@ import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -57,10 +58,11 @@ class DeleteAlbumControllerTest {
 
   @Test
   void testWithValidAlbum() {
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
     AlbumEntity albumEntity = new AlbumEntity(
         2L,
         "AmongUs",
-        new ArtistEntity("OhNo", Lists.newArrayList()),
+        new ArtistEntity("OhNo", Lists.newArrayList(), robotUser),
         ""
     );
     DeleteAlbumController testTarget = new DeleteAlbumController(this.albumRepository, endpoint);

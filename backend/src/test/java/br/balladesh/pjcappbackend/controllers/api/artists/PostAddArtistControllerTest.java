@@ -3,6 +3,7 @@ package br.balladesh.pjcappbackend.controllers.api.artists;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.artists.AddArtistRequestDTO;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class PostAddArtistControllerTest {
   @Mock
   private ArtistRepository artistRepository;
+
+  UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
 
   @Test
   void testNullRepository() {
@@ -47,7 +50,7 @@ class PostAddArtistControllerTest {
     PostAddArtistController testTarget = new PostAddArtistController(this.artistRepository);
 
     Mockito.when(this.artistRepository.findByName(request.getName()))
-        .thenReturn(Optional.of(new ArtistEntity("ohno", Lists.newArrayList())));
+        .thenReturn(Optional.of(new ArtistEntity("ohno", Lists.newArrayList(), robotUser)));
 
     ResponseEntity<MessageResponse> result = testTarget.addArtist(request);
 
@@ -56,7 +59,7 @@ class PostAddArtistControllerTest {
 
   @Test
   void testWithValidName() {
-    ArtistEntity entity = new ArtistEntity("ohno", Lists.newArrayList());
+    ArtistEntity entity = new ArtistEntity("ohno", Lists.newArrayList(), robotUser);
 
     AddArtistRequestDTO request = new AddArtistRequestDTO("ohno");
     PostAddArtistController testTarget = new PostAddArtistController(this.artistRepository);

@@ -4,6 +4,7 @@ import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.minio.GetFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.utilities.Result;
@@ -66,11 +67,12 @@ class GetAllAlbumsControllerTest {
 
   @Test
   void testListing() {
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
     List<AlbumEntity> albumList = Lists.newArrayList(
-        new AlbumEntity(1L, "Ohno1", new ArtistEntity("AH1", Lists.newArrayList()), ""),
-        new AlbumEntity(2L, "Ohno2", new ArtistEntity("AH2", Lists.newArrayList()), ""),
-        new AlbumEntity(3L, "Ohno3", new ArtistEntity("AH3", Lists.newArrayList()), ""),
-        new AlbumEntity(4L, "Ohno4", new ArtistEntity("AH4", Lists.newArrayList()), "")
+        new AlbumEntity(1L, "Ohno1", new ArtistEntity("AH1", Lists.newArrayList(), robotUser), ""),
+        new AlbumEntity(2L, "Ohno2", new ArtistEntity("AH2", Lists.newArrayList(), robotUser), ""),
+        new AlbumEntity(3L, "Ohno3", new ArtistEntity("AH3", Lists.newArrayList(), robotUser), ""),
+        new AlbumEntity(4L, "Ohno4", new ArtistEntity("AH4", Lists.newArrayList(), robotUser), "")
     );
     Page<AlbumEntity> returnPage = new PageImpl<>(albumList);
     Pageable inputPage = PageRequest.of(0, 10, Sort.by("name"));

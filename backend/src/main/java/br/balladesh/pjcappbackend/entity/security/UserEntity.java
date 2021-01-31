@@ -1,16 +1,20 @@
 package br.balladesh.pjcappbackend.entity.security;
 
+import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name="users")
 public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private final long id;
 
   @Column(nullable = false)
   private String name;
@@ -21,11 +25,16 @@ public class UserEntity {
   @Column(nullable = false)
   private String password;
 
-  protected UserEntity() {
+  @JsonIgnore
+  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "createdByUser")
+  private final List<ArtistEntity> artists;
+
+  public UserEntity() {
     this.id = Defaults.getDefaultLong();
     this.name = Defaults.DEFAULT_STR;
     this.email = Defaults.DEFAULT_STR;
     this.password = Defaults.DEFAULT_STR;
+    this.artists = new ArrayList<>();
   }
 
   public UserEntity(String name, String email, String password) {
@@ -33,6 +42,15 @@ public class UserEntity {
     this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.email = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
     this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
+    this.artists = new ArrayList<>();
+  }
+
+  public UserEntity(String name, String email, String password, List<ArtistEntity> artists) {
+    this.id = Defaults.getDefaultLong();
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
+    this.email = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
+    this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
+    this.artists = MoreObjects.firstNonNull(artists, new ArrayList<>());
   }
 
   public long getId() {
@@ -61,6 +79,10 @@ public class UserEntity {
 
   public void setPassword(String password) {
     this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
+  }
+
+  public List<ArtistEntity> getArtists() {
+    return artists;
   }
 
   @Override

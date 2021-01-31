@@ -2,6 +2,7 @@ package br.balladesh.pjcappbackend.controllers.api.artists;
 
 import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,9 @@ class GetAllArtistsControllerTest {
 
   @Test
   void testWithValidRepository() {
-    ArtistEntity artist1 = new ArtistEntity(1L, "ohno1", Lists.newArrayList());
-    ArtistEntity artist2 = new ArtistEntity(2L, "ohno2", Lists.newArrayList());
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    ArtistEntity artist1 = new ArtistEntity(1L, "ohno1", Lists.newArrayList(), robotUser);
+    ArtistEntity artist2 = new ArtistEntity(2L, "ohno2", Lists.newArrayList(), robotUser);
 
     Pageable page = PageRequest.of(0, 10, Sort.by("name"));
 
@@ -43,7 +45,8 @@ class GetAllArtistsControllerTest {
     PagedArtistResponseBody expected = new PagedArtistResponseBody(aPage);
 
     GetAllArtistsController testTarget = new GetAllArtistsController(this.artistRepository);
-    ResponseEntity<PagedArtistResponseBody> result = (ResponseEntity<PagedArtistResponseBody>) testTarget.getAllArtists(0, 10, "asc");
+    ResponseEntity<PagedArtistResponseBody> result = (ResponseEntity<PagedArtistResponseBody>)
+      testTarget.getAllArtists(0, 10, "asc");
 
     assertSame(HttpStatus.OK, result.getStatusCode());
     assertEquals(expected, result.getBody());

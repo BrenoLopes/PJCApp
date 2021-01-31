@@ -2,6 +2,7 @@ package br.balladesh.pjcappbackend.dto.api.albums;
 
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -15,7 +16,8 @@ class PagedAlbumResponseBodyTest {
   AlbumEntity album;
 
   public PagedAlbumResponseBodyTest() {
-    ArtistEntity artist = new ArtistEntity("randomartist", Lists.newArrayList());
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    ArtistEntity artist = new ArtistEntity("randomartist", Lists.newArrayList(), robotUser);
     this.album = new AlbumEntity("randomname", artist, Defaults.DEFAULT_STR);
 
     artist.getAlbums().add(album);

@@ -6,6 +6,7 @@ import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -42,10 +43,11 @@ class GetFilterAlbumsControllerTest {
 
   @Test
   void testWithValidRepository() {
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
     AlbumEntity album = new AlbumEntity(
         1L,
         "amongus",
-        new ArtistEntity("ohno", Lists.newArrayList()),
+        new ArtistEntity("ohno", Lists.newArrayList(), robotUser),
         ""
     );
     Pageable pageable = PageRequest.of(0, 10, Sort.by("name"));

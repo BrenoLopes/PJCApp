@@ -2,6 +2,7 @@ package br.balladesh.pjcappbackend.controllers.api.artists;
 
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.google.common.collect.Lists;
@@ -53,7 +54,10 @@ class DeleteArtistControllerTest {
   void testValidRepository() {
     long id = 1;
 
-    Optional<ArtistEntity> result = Optional.of(new ArtistEntity("ohno", Lists.newArrayList()));
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    Optional<ArtistEntity> result = Optional.of(
+      new ArtistEntity("ohno", Lists.newArrayList(), robotUser)
+    );
     Mockito.when(this.artistRepository.findById(id)).thenReturn(result);
     Mockito.doNothing().when(this.artistRepository).delete(result.get());
 

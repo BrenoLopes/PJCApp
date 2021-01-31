@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.entity;
 
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,13 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AlbumEntityTest {
 
+  private final UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+
   @Test
   void getId() {
     long expected = 1;
     AlbumEntity target = new AlbumEntity(
         expected,
         "ohno",
-        new ArtistEntity("amongus", Lists.newArrayList()),
+        new ArtistEntity("amongus", Lists.newArrayList(), robotUser),
         Defaults.DEFAULT_STR
     );
 
@@ -38,7 +41,7 @@ class AlbumEntityTest {
     AlbumEntity target = new AlbumEntity(
         1L,
         expected,
-        new ArtistEntity("amongus", Lists.newArrayList()),
+        new ArtistEntity("amongus", Lists.newArrayList(), robotUser),
         Defaults.DEFAULT_STR
     );
 
@@ -60,7 +63,7 @@ class AlbumEntityTest {
     AlbumEntity target = new AlbumEntity(
         1L,
         "ohno",
-        new ArtistEntity("amongus", Lists.newArrayList()),
+        new ArtistEntity("amongus", Lists.newArrayList(), robotUser),
         expected
     );
 
@@ -78,7 +81,7 @@ class AlbumEntityTest {
 
   @Test
   void getArtist() {
-    ArtistEntity expected = new ArtistEntity("AmongUs", Lists.newArrayList());
+    ArtistEntity expected = new ArtistEntity("AmongUs", Lists.newArrayList(), robotUser);
 
     AlbumEntity target = new AlbumEntity(
         1L,
@@ -92,7 +95,7 @@ class AlbumEntityTest {
 
   @Test
   void setArtist() {
-    ArtistEntity expected = new ArtistEntity("AmongUs", Lists.newArrayList());
+    ArtistEntity expected = new ArtistEntity("AmongUs", Lists.newArrayList(), robotUser);
     AlbumEntity target = new AlbumEntity(null, null, null, null);
     target.setArtist(expected);
 
@@ -101,7 +104,7 @@ class AlbumEntityTest {
 
   @Test
   void toJson() {
-    ArtistEntity artist = new ArtistEntity("AmongUs", Lists.newArrayList());
+    ArtistEntity artist = new ArtistEntity("AmongUs", Lists.newArrayList(), robotUser);
     AlbumEntity target = new AlbumEntity(1L, "ohno", artist, "FakeMinIOObjectName");
 
     ObjectMapper mapper = new ObjectMapper();

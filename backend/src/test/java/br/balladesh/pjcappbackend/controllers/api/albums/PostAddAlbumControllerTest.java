@@ -5,6 +5,7 @@ import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.albums.AddAlbumRequestBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
@@ -48,7 +49,8 @@ class PostAddAlbumControllerTest {
     AddAlbumRequestBody request = new AddAlbumRequestBody("ohno", new EmptyMultipartFile(), 1L, "AmongUs");
     PostAddAlbumController testTarget = new PostAddAlbumController(this.albumRepository, this.artistRepository, this.endpoint);
 
-    ArtistEntity artistEntity = new ArtistEntity(1L, "AmongUs", Lists.newArrayList());
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    ArtistEntity artistEntity = new ArtistEntity(1L, "AmongUs", Lists.newArrayList(), robotUser);
     AlbumEntity albumEntity = new AlbumEntity(1L, "ohno", artistEntity, "");
 
     Mockito.when(this.albumRepository.findByName(request.getName()))
@@ -78,7 +80,8 @@ class PostAddAlbumControllerTest {
     AddAlbumRequestBody request = new AddAlbumRequestBody("ohno", new EmptyMultipartFile(), 1L, "AmongUs");
     PostAddAlbumController testTarget = new PostAddAlbumController(this.albumRepository, this.artistRepository, this.endpoint);
 
-    ArtistEntity artistEntity = new ArtistEntity(1L, "AmongUs", Lists.newArrayList());
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    ArtistEntity artistEntity = new ArtistEntity(1L, "AmongUs", Lists.newArrayList(), robotUser);
     AlbumEntity albumEntity = new AlbumEntity("ohno", artistEntity, "");
 
     Mockito.when(this.albumRepository.findByName(request.getName()))

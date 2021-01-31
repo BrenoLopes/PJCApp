@@ -5,6 +5,7 @@ import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.albums.EditAlbumRequestBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;
@@ -35,6 +36,8 @@ class PutEditAlbumControllerTest {
 
   @Autowired
   private MinIOEndpoint minIOEndpoint;
+
+  private UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
 
   @Test
   void testWithNullRepository() {
@@ -84,7 +87,7 @@ class PutEditAlbumControllerTest {
     AlbumEntity album = new AlbumEntity(
         1L,
         "ohno",
-        new ArtistEntity("amongus", Lists.newArrayList()),
+        new ArtistEntity("amongus", Lists.newArrayList(), robotUser),
         ""
     );
 
@@ -115,13 +118,14 @@ class PutEditAlbumControllerTest {
     AlbumEntity album = new AlbumEntity(
         1L,
         "ohno",
-        new ArtistEntity(1L, "amongus", Lists.newArrayList()),
+        new ArtistEntity(1L, "amongus", Lists.newArrayList(), robotUser),
         ""
     );
     ArtistEntity artist = new ArtistEntity(
         1L,
         "amongus",
-        Lists.newArrayList()
+        Lists.newArrayList(),
+      robotUser
     );
 
     Mockito.when(this.albumRepository.findById(request.getAlbumId()))
@@ -155,13 +159,14 @@ class PutEditAlbumControllerTest {
     AlbumEntity album = new AlbumEntity(
         1L,
         "ohno",
-        new ArtistEntity(1L, "amongus", Lists.newArrayList()),
+        new ArtistEntity(1L, "amongus", Lists.newArrayList(), robotUser),
         ""
     );
     ArtistEntity artist = new ArtistEntity(
         1L,
         "amongus",
-        Lists.newArrayList()
+        Lists.newArrayList(),
+      robotUser
     );
 
     Mockito.when(this.albumRepository.findById(request.getAlbumId()))

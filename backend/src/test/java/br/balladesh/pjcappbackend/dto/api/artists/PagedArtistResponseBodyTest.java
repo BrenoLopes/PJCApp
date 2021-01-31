@@ -1,6 +1,7 @@
 package br.balladesh.pjcappbackend.dto.api.artists;
 
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,8 @@ class PagedArtistResponseBodyTest {
   private final List<ArtistEntity> artists;
 
   private PagedArtistResponseBodyTest() {
-    this.artists = Lists.newArrayList(new ArtistEntity("AnArtist", Lists.newArrayList()));
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    this.artists = Lists.newArrayList(new ArtistEntity("AnArtist", Lists.newArrayList(), robotUser));
 
     this.testTarget = new PagedArtistResponseBody(this.artists, 0, 1, 1);
   }
