@@ -1,9 +1,6 @@
 package br.balladesh.pjcappbackend.services;
 
-import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
-import br.balladesh.pjcappbackend.controllers.exceptions.ConflictException;
-import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
-import br.balladesh.pjcappbackend.controllers.exceptions.NotFoundException;
+import br.balladesh.pjcappbackend.controllers.exceptions.*;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.security.UserRepository;
@@ -77,10 +74,9 @@ public class UsersService {
    * @param password The user's password
    * @param artistEntities The user's artists
    *
-   * @throws java.security.InvalidParameterException if any parameter is null
-   * @throws br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException if the email is in an invalid format
+   * @throws BadRequestException if the email is in an invalid format or any data is null
    * @throws ConflictException if an user already exists with this email address.
-   * @throws br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException if any error happens in the
+   * @throws InternalServerErrorException if any error happens in the
    * process
    *
    * @return true if successfull, false if something fails
@@ -94,7 +90,7 @@ public class UsersService {
       throw new BadRequestException("Could not add this user, because the new email is invalid!");
 
     try {
-      if (this.userRepository.findByEmail(email).isPresent())
+      if (this.getUserBy(email).isPresent())
         throw new ConflictException("An user already exists with this email address!");
       
       String encodedPassword = this.passwordEncoder.encode(password);

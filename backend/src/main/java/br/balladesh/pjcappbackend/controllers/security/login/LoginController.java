@@ -33,10 +33,13 @@ public class LoginController {
 
   @PostMapping("/login")
   public ResponseEntity<?> authUser(@RequestBody UserLoginRequest loginRequest) {
-    if( HasNull.withParams(this.authenticationManager, this.jwtUtils).check() ) {
+    if (this.isOneOfThemNull(this.authenticationManager, this.jwtUtils)) {
       this.logger.error("LoginController::authUser Required constructors was not autowired.");
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    if (loginRequest == null)
+      return ResponseCreator.create(HttpStatus.BAD_REQUEST);
 
     try {
       Authentication authentication = this.authenticationManager.authenticate(
@@ -55,5 +58,9 @@ public class LoginController {
     } catch(Exception ignore) {
       return ResponseCreator.create("Your credentials is incorrect!", HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  private boolean isOneOfThemNull(Object... args) {
+    return HasNull.withParams(args).check();
   }
 }

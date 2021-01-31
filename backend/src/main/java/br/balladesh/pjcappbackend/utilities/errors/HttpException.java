@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.utilities.errors;
 
 import org.springframework.http.HttpStatus;
 
-public class HttpException extends Exception {
+public class HttpException extends RuntimeException {
   private final HttpStatus statusCode;
 
   public HttpException(HttpStatus statusCode) {
