@@ -4,7 +4,7 @@ import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.minio.GetFromMinIOCommand;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.utilities.Result;

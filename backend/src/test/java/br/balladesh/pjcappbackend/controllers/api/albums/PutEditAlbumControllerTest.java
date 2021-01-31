@@ -5,7 +5,7 @@ import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.albums.EditAlbumRequestBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import br.balladesh.pjcappbackend.utilities.defaults.EmptyMultipartFile;

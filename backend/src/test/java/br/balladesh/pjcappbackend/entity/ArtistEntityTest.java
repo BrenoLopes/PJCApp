@@ -1,6 +1,5 @@
 package br.balladesh.pjcappbackend.entity;
 
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;

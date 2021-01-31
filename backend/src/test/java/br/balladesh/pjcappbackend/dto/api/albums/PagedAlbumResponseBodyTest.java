@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.dto.api.albums;
 
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

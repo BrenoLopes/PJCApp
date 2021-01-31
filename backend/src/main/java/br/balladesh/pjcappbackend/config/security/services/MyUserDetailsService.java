@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.config.security.services;
 
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.security.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;

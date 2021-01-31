@@ -1,12 +1,10 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
 import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
-import br.balladesh.pjcappbackend.controllers.api.artists.GetFilterArtistController;
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
-import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -19,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

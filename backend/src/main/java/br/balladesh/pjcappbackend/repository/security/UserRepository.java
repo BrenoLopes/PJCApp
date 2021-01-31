@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.repository.security;
 
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package br.balladesh.pjcappbackend.config.security.services;
 
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;

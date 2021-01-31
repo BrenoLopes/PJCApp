@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.controllers.security.signup;
 
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.UserSignUpRequest;
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.security.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

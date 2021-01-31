@@ -1,6 +1,5 @@
-package br.balladesh.pjcappbackend.entity.security;
+package br.balladesh.pjcappbackend.entity;
 
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;

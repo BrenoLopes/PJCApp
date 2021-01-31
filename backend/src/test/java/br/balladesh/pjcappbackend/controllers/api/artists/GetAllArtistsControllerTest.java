@@ -2,7 +2,7 @@ package br.balladesh.pjcappbackend.controllers.api.artists;
 
 import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.entity.security.UserEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
