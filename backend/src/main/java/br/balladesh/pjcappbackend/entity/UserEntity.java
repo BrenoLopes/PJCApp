@@ -52,6 +52,14 @@ public class UserEntity {
     this.artists = MoreObjects.firstNonNull(artists, new ArrayList<>());
   }
 
+  public UserEntity(long id, String name, String email, String password, List<ArtistEntity> artists) {
+    this.id = id;
+    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
+    this.email = MoreObjects.firstNonNull(email, Defaults.DEFAULT_STR);
+    this.password = MoreObjects.firstNonNull(password, Defaults.DEFAULT_STR);
+    this.artists = MoreObjects.firstNonNull(artists, new ArrayList<>());
+  }
+
   public long getId() {
     return id;
   }
