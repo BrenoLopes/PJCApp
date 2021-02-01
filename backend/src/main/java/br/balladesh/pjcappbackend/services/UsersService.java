@@ -7,6 +7,9 @@ import br.balladesh.pjcappbackend.repository.security.UserRepository;
 import br.balladesh.pjcappbackend.utilities.predicates.AllNull;
 import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +65,30 @@ public class UsersService {
     try {
       return this.userRepository.findByEmail(email);
     } catch (Exception e) {
+      throw new InternalServerErrorException(e.getMessage());
+    }
+  }
+
+  /**
+   * Load a user entity based on the user created by the security
+   * inside the security context.
+   *
+   * @throws InternalServerErrorException If an error happens in the process or the user
+   * in the security context is in another format
+   *
+   * @return The user entity from the database
+   */
+  public Optional<UserEntity> getCurrentAuthenticatedUser() {
+    try {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+      if (!(authentication.getPrincipal() instanceof UserDetails))
+        throw new RuntimeException("The context wasn't loaded properly");
+
+      UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+      return this.userRepository.findByEmail(userDetails.getUsername());
+    } catch (RuntimeException e) {
       throw new InternalServerErrorException(e.getMessage());
     }
   }

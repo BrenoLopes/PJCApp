@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.services;
 
+import br.balladesh.pjcappbackend.config.security.services.MyUserDetails;
 import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
 import br.balladesh.pjcappbackend.controllers.exceptions.ConflictException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
@@ -15,6 +16,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -22,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -467,5 +474,38 @@ class UsersServiceTest {
     };
 
     assertThrows(InternalServerErrorException.class, fn);
+  }
+
+  @Test
+  public void shouldReturnTheCurrentUser() throws Exception {
+    UserEntity expected = new UserEntity(
+        1L,
+        "Robot",
+        "robot@robocop.com",
+        "IHateCaptchas",
+        Lists.newArrayList()
+    );
+
+    UserDetails userFromContext = new MyUserDetails(
+        expected.getId(),
+        expected.getEmail(),
+        expected.getEmail(),
+        expected.getPassword(),
+        Lists.newArrayList()
+    );
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        userFromContext, null, Lists.newArrayList()
+    );
+    SecurityContextHolder.getContext().setAuthentication(auth);
+
+    Mockito
+        .when(this.userRepository.findByEmail(userFromContext.getUsername()))
+        .thenReturn(Optional.of(expected));
+
+    UsersService testTarget = new UsersService(this.userRepository, this.passwordEncoder);
+    UserEntity received = testTarget.getCurrentAuthenticatedUser()
+        .orElseThrow(Exception::new);
+
+    assertEquals(expected, received);
   }
 }
