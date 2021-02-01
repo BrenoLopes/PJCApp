@@ -30,25 +30,25 @@ public class ArtistEntity {
 
   @ManyToOne
   @JoinColumn(name = "author")
-  private final UserEntity createdByUser;
+  private final UserEntity owner;
 
   public ArtistEntity() {
     this.name = Defaults.DEFAULT_STR;
     this.albums = Lists.newArrayList();
-    this.createdByUser = new UserEntity();
+    this.owner = new UserEntity();
   }
 
-  public ArtistEntity(String name, List<AlbumEntity> album, UserEntity createdByUser) {
+  public ArtistEntity(String name, List<AlbumEntity> album, UserEntity owner) {
     this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.albums = MoreObjects.firstNonNull(album, Lists.newArrayList());
-    this.createdByUser = MoreObjects.firstNonNull(createdByUser, new UserEntity());
+    this.owner = MoreObjects.firstNonNull(owner, new UserEntity());
   }
 
-  public ArtistEntity(Long id, String name, List<AlbumEntity> album, UserEntity createdByUser) {
+  public ArtistEntity(Long id, String name, List<AlbumEntity> album, UserEntity owner) {
     this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
     this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.albums = MoreObjects.firstNonNull(album, Lists.newArrayList());
-    this.createdByUser = MoreObjects.firstNonNull(createdByUser, new UserEntity());
+    this.owner = MoreObjects.firstNonNull(owner, new UserEntity());
   }
 
   public long getId() {
@@ -67,8 +67,8 @@ public class ArtistEntity {
       return albums;
   }
 
-  public UserEntity getCreatedByUser() {
-    return createdByUser;
+  public UserEntity getOwner() {
+    return owner;
   }
 
   @Override
@@ -79,7 +79,7 @@ public class ArtistEntity {
     return id == that.id
         && Objects.equal(this.name, that.name)
         && Objects.equal(this.albums, that.albums)
-        && Objects.equal(this.createdByUser, that.createdByUser);
+        && Objects.equal(this.owner, that.owner);
   }
 
   @Override
@@ -97,7 +97,7 @@ public class ArtistEntity {
     ArrayNode albums = mapper.valueToTree(this.albums);
     node.putArray("albums").addAll(albums);
 
-    node.put("created_by", this.createdByUser.getName());
+    node.put("created_by", this.owner.getName());
 
     return node;
   }
@@ -108,7 +108,7 @@ public class ArtistEntity {
         .add("id", this.id)
         .add("name", this.name)
         .add("albums", this.albums)
-        .add("created_by", this.createdByUser)
+        .add("created_by", this.owner)
         .toString();
   }
 }

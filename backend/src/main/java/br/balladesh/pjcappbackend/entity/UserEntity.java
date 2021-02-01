@@ -25,7 +25,7 @@ public class UserEntity {
   private String password;
 
   @JsonIgnore
-  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "createdByUser")
+  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "owner")
   private final List<ArtistEntity> artists;
 
   public UserEntity() {
