@@ -34,7 +34,7 @@ public class ArtistEntity {
   private UserEntity owner;
 
   public ArtistEntity() {
-    this(Defaults.DEFAULT_STR, Lists.newArrayList(), new UserEntity());
+    this(Defaults.DEFAULT_STR, Lists.newArrayList(), null);
   }
 
   public ArtistEntity(String name, UserEntity owner) {
@@ -49,7 +49,7 @@ public class ArtistEntity {
     this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
     this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.albums = MoreObjects.firstNonNull(album, Lists.newArrayList());
-    this.owner = MoreObjects.firstNonNull(owner, new UserEntity());
+    this.setOwner(owner);
   }
 
   // Getters

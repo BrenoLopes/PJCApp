@@ -28,7 +28,7 @@ public class AlbumEntity {
   private ArtistEntity artist;
 
   public AlbumEntity() {
-    this(Defaults.getDefaultLong(), Defaults.DEFAULT_STR, new ArtistEntity(), Defaults.DEFAULT_STR);
+    this(Defaults.getDefaultLong(), Defaults.DEFAULT_STR, null, Defaults.DEFAULT_STR);
   }
 
   public AlbumEntity(String name, String image) {
@@ -43,7 +43,7 @@ public class AlbumEntity {
     this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
     this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.image = MoreObjects.firstNonNull(image, Defaults.DEFAULT_STR);
-    this.artist = MoreObjects.firstNonNull(artist, new ArtistEntity());
+    this.setArtist(artist);
   }
 
 
