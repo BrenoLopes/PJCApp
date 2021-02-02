@@ -16,7 +16,9 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.Assert.notNull;
@@ -59,7 +61,7 @@ public class AlbumsService {
       return this.createMinIOUrlForEachAlbumImage(list);
     } catch (Exception e) {
       LoggerFactory.getLogger("wtf").error("Wtf", e);
-      throw new InternalServerErrorException(e.getMessage());
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -86,7 +88,7 @@ public class AlbumsService {
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
-      throw new InternalServerErrorException(e.getMessage());
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -113,7 +115,57 @@ public class AlbumsService {
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
-      throw new InternalServerErrorException(e.getMessage());
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  /**
+   * Will search an album with one information or a combination of them.
+   *
+   * @param owner The user who inserted the album
+   * @param pageNumber the page index you want to see
+   * @param pageSize the maximum size of a page
+   * @param orderDirection the order you want to sort it
+   * @param id Optional - the album's id
+   * @param name Optional - the album's name
+   * @param artistName Optional - Album's owned by this author
+   * @return A page containing a list from the result
+   *
+   * @throws BadRequestException if the owner is null
+   * @throws InternalServerErrorException if an error happens in the process
+   */
+  public Page<AlbumEntity> searchAnAlbumByMultipleParameters(
+      UserEntity owner,
+      int pageNumber,
+      int pageSize,
+      String orderDirection,
+      Optional<Long> id,
+      Optional<String> name,
+      Optional<String> artistName
+  ) throws BadRequestException, InternalServerErrorException {
+    if (owner == null)
+      throw new BadRequestException("The owner cannot be null");
+
+    try {
+      Sort sort = Sort.by("name");
+
+      if (this.isInDescendingOrder(orderDirection))
+        sort.descending();
+
+      Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+      if (!id.isPresent() && !name.isPresent() && !artistName.isPresent())
+        return new PageImpl<>(new ArrayList<>(), pageable, 0);
+
+      Long theId = id.orElse(null);
+      String theName = name.orElse(null);
+      String theArtistName = artistName.orElse(null);
+
+      Page<AlbumEntity> resultPage = this.albumRepository.findByIdAndNameAndArtist_NameAndArtistOwner(theId, theName, theArtistName, owner, pageable);
+
+      return this.createMinIOUrlForEachAlbumImage(resultPage);
+    } catch (Exception e) {
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -134,20 +186,18 @@ public class AlbumsService {
     if (this.isOneOfThemNull(artistEntity, owner, name, image))
       throw new BadRequestException("No parameter can be null!");
 
-    String fileName = "";
-
     try {
       if (this.albumRepository.findByNameAndArtistOwner(name, owner).isPresent())
         throw new ConflictException("An album with this name already exists!");
 
-      fileName = this.minIOService.uploadFile(image);
+      String fileName = this.minIOService.uploadFile(image);
       AlbumEntity theEntity = new AlbumEntity(name, artistEntity, fileName);
 
       return theEntity.equals(this.albumRepository.save(theEntity));
     } catch (ConflictException e) {
       throw e;
     } catch (Exception e) {
-      throw new InternalServerErrorException(e.getMessage());
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -183,7 +233,7 @@ public class AlbumsService {
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
-      throw new InternalServerErrorException(e.getMessage());
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -213,7 +263,7 @@ public class AlbumsService {
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
-      throw new InternalServerErrorException(e.getMessage());
+      throw new InternalServerErrorException(e);
     }
   }
 
