@@ -1,27 +1,26 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
-import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.api.albums.PagedAlbumResponseBody;
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
-import br.balladesh.pjcappbackend.minio.GetFromMinIOCommand;
-import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import br.balladesh.pjcappbackend.utilities.Result;
+import br.balladesh.pjcappbackend.services.AlbumsService;
+import br.balladesh.pjcappbackend.services.UsersService;
 import com.google.common.collect.Lists;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,72 +28,92 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class GetAllAlbumsControllerTest {
   @Mock
-  private AlbumRepository albumRepository;
-
+  private AlbumsService albumsService;
   @Mock
-  private GetFromMinIOCommand command;
+  private UsersService usersService;
 
-  @Autowired
-  private MinIOEndpoint endpoint;
+  private GetAllAlbumsController testTarget;
 
-  @Test
-  void testWithNullRepository() {
-    GetAllAlbumsController testTarget = new GetAllAlbumsController(null, endpoint);
-    ResponseEntity<?> _result = testTarget.getAllAlbums(0, 10, "asc");
-
-    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, _result.getStatusCode());
+  @BeforeEach
+  void setUp() {
+    this.testTarget = new GetAllAlbumsController(this.albumsService, this.usersService);
   }
 
-  @Test
-  void testEmptyList() {
-    List<AlbumEntity> albumList = Lists.newArrayList();
-    Page<AlbumEntity> returnPage = new PageImpl<>(albumList);
-    Pageable inputPage = PageRequest.of(0, 10, Sort.by("name"));
-
-    Mockito.when(this.albumRepository.findAll(inputPage)).thenReturn(returnPage);
-
-    GetAllAlbumsController testTarget = new GetAllAlbumsController(this.albumRepository, endpoint, this.command);
-    ResponseEntity<?> _result = testTarget.getAllAlbums(0, 10, "asc");
-
-    if (!(_result.getBody() instanceof PagedAlbumResponseBody))
-      fail();
-
-    PagedAlbumResponseBody result = (PagedAlbumResponseBody) _result.getBody();
-
-    assertSame(HttpStatus.OK, _result.getStatusCode());
-    assertTrue(result.getAlbums().size() < 1);
-  }
+  private final UserEntity currentUser = new UserEntity(
+      "TheRobot",
+      "robot@robocop.com",
+      "123456BCrypted"
+  );
 
   @Test
-  void testListing() {
-    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
-    List<AlbumEntity> albumList = Lists.newArrayList(
-        new AlbumEntity(1L, "Ohno1", new ArtistEntity("AH1", Lists.newArrayList(), robotUser), ""),
-        new AlbumEntity(2L, "Ohno2", new ArtistEntity("AH2", Lists.newArrayList(), robotUser), ""),
-        new AlbumEntity(3L, "Ohno3", new ArtistEntity("AH3", Lists.newArrayList(), robotUser), ""),
-        new AlbumEntity(4L, "Ohno4", new ArtistEntity("AH4", Lists.newArrayList(), robotUser), "")
+  void forbidden_WhenGettingAllAlbum_BecauseTheUserHaventLoaded() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.empty());
+
+    ResponseEntity<?> response = testTarget.getAllAlbums(
+        1L,
+        0,
+        10,
+        "asc"
     );
-    Page<AlbumEntity> returnPage = new PageImpl<>(albumList);
-    Pageable inputPage = PageRequest.of(0, 10, Sort.by("name"));
 
-    Mockito.when(this.albumRepository.findAll(inputPage)).thenReturn(returnPage);
-    Mockito.when(this.command.execute()).thenReturn(Result.from("MockMinIOObject"));
+    assertSame(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
 
-    GetAllAlbumsController testTarget = new GetAllAlbumsController(this.albumRepository, endpoint, this.command);
-    ResponseEntity<?> _result = testTarget.getAllAlbums(0, 10, "asc");
+  @Test
+  void internalServerError_WhenGettingAllAlbum_BecauseTheDbDied() {
+    final long theId = 1;
 
-    if (!(_result.getBody() instanceof PagedAlbumResponseBody))
-      fail();
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.currentUser));
 
-    PagedAlbumResponseBody result = (PagedAlbumResponseBody) _result.getBody();
+    Mockito
+        .doThrow(new InternalServerErrorException("Whoops"))
+        .when(this.albumsService).getAllAlbumsFromArtist(1L, this.currentUser, 0, 10, "asc");
 
-    albumList = albumList
-        .stream()
-        .peek(album -> album.setImage("MockMinIOObject"))
-        .collect(Collectors.toList());
-    Page<AlbumEntity> expected = new PageImpl<>(albumList);
+    ResponseEntity<?> response = testTarget.getAllAlbums(
+        1L,
+        0,
+        10,
+        "asc"
+    );
 
-    assertSame(HttpStatus.OK, _result.getStatusCode());
-    assertEquals(new PagedAlbumResponseBody(expected), result);
+    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void success_WhenGettingAllAlbum() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.currentUser));
+
+    final long theId = 1;
+
+    Page<AlbumEntity> expectedPage = this.createDummyPage();
+
+    Mockito
+        .doReturn(expectedPage)
+        .when(this.albumsService).getAllAlbumsFromArtist(theId, this.currentUser, 0, 10, "asc");
+
+    ResponseEntity<?> response = testTarget.getAllAlbums(theId, 0, 10, "asc");
+
+    assertTrue(response.getBody() instanceof PagedAlbumResponseBody);
+    assertSame(HttpStatus.OK, response.getStatusCode());
+    assertEquals(new PagedAlbumResponseBody(expectedPage), response.getBody());
+  }
+
+  private Page<AlbumEntity> createDummyPage() {
+    ArtistEntity artist = new ArtistEntity("Artist1", new ArrayList<>(), this.currentUser);
+
+    AlbumEntity album1 = new AlbumEntity("Album1", artist, "123-Image1");
+    AlbumEntity album2 = new AlbumEntity("Album2", artist, "123-Image2");
+    AlbumEntity album3 = new AlbumEntity("Album3", artist, "123-Image3");
+    AlbumEntity album4 = new AlbumEntity("Album4", artist, "123-Image4");
+
+    ArrayList<AlbumEntity> albumList = Lists.newArrayList(album1, album2, album3, album4);
+
+    return new PageImpl<>(albumList, PageRequest.of(0, 10, Sort.by("name")), albumList.size());
   }
 }

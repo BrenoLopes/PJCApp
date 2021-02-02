@@ -1,18 +1,16 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
-import br.balladesh.pjcappbackend.config.minio.MinIOEndpoint;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
-import br.balladesh.pjcappbackend.entity.AlbumEntity;
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
-import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import org.assertj.core.util.Lists;
+import br.balladesh.pjcappbackend.services.AlbumsService;
+import br.balladesh.pjcappbackend.services.UsersService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,52 +23,72 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class DeleteAlbumControllerTest {
   @Mock
-  private AlbumRepository albumRepository;
+  private AlbumsService albumsService;
+  @Mock
+  private UsersService usersService;
 
-  @Autowired
-  private MinIOEndpoint endpoint;
+  private DeleteAlbumController testTarget;
+
+  @BeforeEach
+  void setUp() {
+    this.testTarget = new DeleteAlbumController(this.albumsService, this.usersService);
+  }
+
+  private final UserEntity currentUser = new UserEntity(
+      "TheRobot",
+      "robot@robocop.com",
+      "123456BCrypted"
+  );
 
   @Test
-  void testWithNullRepository() {
-    DeleteAlbumController testTarget = new DeleteAlbumController(null, endpoint);
-    ResponseEntity<MessageResponse> result = testTarget.deleteAlbum(Optional.of(1L));
+  void badRequest_WhenDeletingAnAlbum_NoId() {
+    ResponseEntity<MessageResponse> response = testTarget.deleteAlbum(Optional.empty());
 
-    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+    assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
   @Test
-  void testWithNullId() {
-    DeleteAlbumController testTarget = new DeleteAlbumController(this.albumRepository, endpoint);
-    ResponseEntity<MessageResponse> result = testTarget.deleteAlbum(Optional.empty());
+  void forbidden_WhenDeletingAnAlbum_BecauseTheUserHaventLoaded() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.empty());
 
-    assertSame(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    ResponseEntity<MessageResponse> response = testTarget.deleteAlbum(Optional.of(1L));
+
+    assertSame(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
   @Test
-  void testWithAlbumNotFound() {
-    DeleteAlbumController testTarget = new DeleteAlbumController(this.albumRepository, endpoint);
+  void internalServerError_WhenDeletingAnAlbum_BecauseTheDbDied() {
+    final long theId = 1;
 
-    Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.empty());
-    ResponseEntity<MessageResponse> result = testTarget.deleteAlbum(Optional.of(2L));
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.currentUser));
 
-    assertSame(HttpStatus.NOT_FOUND, result.getStatusCode());
+    Mockito
+        .doThrow(new InternalServerErrorException("Whoops"))
+        .when(this.albumsService).removeAnAlbum(theId, currentUser);
+
+    ResponseEntity<MessageResponse> response = testTarget.deleteAlbum(Optional.of(theId));
+
+    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
-  void testWithValidAlbum() {
-    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
-    AlbumEntity albumEntity = new AlbumEntity(
-        2L,
-        "AmongUs",
-        new ArtistEntity("OhNo", Lists.newArrayList(), robotUser),
-        ""
-    );
-    DeleteAlbumController testTarget = new DeleteAlbumController(this.albumRepository, endpoint);
+  void success_WhenDeletingAnAlbum() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.currentUser));
 
-    Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.of(albumEntity));
-    Mockito.doNothing().when(albumRepository).delete(albumEntity);
-    ResponseEntity<MessageResponse> result = testTarget.deleteAlbum(Optional.of(2L));
+    final long theId = 1;
 
-    assertSame(HttpStatus.OK, result.getStatusCode());
+    Mockito
+        .doNothing()
+        .when(this.albumsService).removeAnAlbum(theId, this.currentUser);
+
+    ResponseEntity<MessageResponse> response = testTarget.deleteAlbum(Optional.of(theId));
+
+    assertSame(HttpStatus.OK, response.getStatusCode());
   }
 }
