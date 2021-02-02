@@ -23,7 +23,8 @@ public class AlbumEntity {
 
   private String image;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn
   private ArtistEntity artist;
 
   public AlbumEntity() {
