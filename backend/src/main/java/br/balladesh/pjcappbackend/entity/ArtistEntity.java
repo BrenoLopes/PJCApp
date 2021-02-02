@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import javax.persistence.*;
@@ -26,22 +27,22 @@ public class ArtistEntity {
   private String name;
 
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "artist")
-  private final List<AlbumEntity> albums;
+  private List<AlbumEntity> albums;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "author")
-  private final UserEntity owner;
+  private UserEntity owner;
 
   public ArtistEntity() {
-    this.name = Defaults.DEFAULT_STR;
-    this.albums = Lists.newArrayList();
-    this.owner = new UserEntity();
+    this(Defaults.DEFAULT_STR, Lists.newArrayList(), new UserEntity());
+  }
+
+  public ArtistEntity(String name, UserEntity owner) {
+    this(Defaults.getDefaultLong(), name, Lists.newArrayList(), owner);
   }
 
   public ArtistEntity(String name, List<AlbumEntity> album, UserEntity owner) {
-    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
-    this.albums = MoreObjects.firstNonNull(album, Lists.newArrayList());
-    this.owner = MoreObjects.firstNonNull(owner, new UserEntity());
+    this(Defaults.getDefaultLong(), name, album, owner);
   }
 
   public ArtistEntity(Long id, String name, List<AlbumEntity> album, UserEntity owner) {
@@ -51,6 +52,7 @@ public class ArtistEntity {
     this.owner = MoreObjects.firstNonNull(owner, new UserEntity());
   }
 
+  // Getters
   public long getId() {
     return id;
   }
@@ -59,16 +61,69 @@ public class ArtistEntity {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
-  }
-
-  public List<AlbumEntity> getAlbums() {
-      return albums;
+  public ImmutableList<AlbumEntity> getAlbums() {
+    return ImmutableList.copyOf(albums);
   }
 
   public UserEntity getOwner() {
     return owner;
+  }
+
+
+  // Setters
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setAlbums(List<AlbumEntity> albumList) {
+    this.albums = MoreObjects.firstNonNull(albumList, Lists.newArrayList());
+  }
+
+
+  // Table relationship handlers
+  public void addAlbum(AlbumEntity albumEntity) {
+    this.addAlbum(albumEntity, true);
+  }
+
+  public void addAlbums(List<AlbumEntity> albumEntities) {
+    albumEntities.forEach(entity -> this.addAlbum(entity, true));
+  }
+
+  void addAlbum(AlbumEntity albumEntity, boolean shouldAdd) {
+    if (albumEntity == null) return;
+
+    if (this.albums.contains(albumEntity))
+      this.albums.set(this.getAlbums().indexOf(albumEntity), albumEntity);
+    else
+      this.albums.add(albumEntity);
+
+    if (shouldAdd)
+      albumEntity.setArtist(this, false);
+  }
+
+  public void removeAlbum(AlbumEntity albumEntity) {
+    this.albums.remove(albumEntity);
+    albumEntity.setArtist(null);
+  }
+
+  public void removeAlbums(List<AlbumEntity> albumEntities) {
+    albumEntities.forEach(this::removeAlbum);
+  }
+
+  public void setOwner(UserEntity owner) {
+    this.setOwner(owner, true);
+  }
+
+  void setOwner(UserEntity owner, boolean shouldAdd) {
+    this.owner = owner;
+
+    if (owner != null && shouldAdd) {
+      owner.addArtist(this, false);
+    }
   }
 
   @Override

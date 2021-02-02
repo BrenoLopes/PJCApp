@@ -28,16 +28,15 @@ public class AlbumEntity {
   private ArtistEntity artist;
 
   public AlbumEntity() {
-    this.name = Defaults.DEFAULT_STR;
-    this.image = Defaults.DEFAULT_STR;
-    this.id = Defaults.getDefaultInt();
-    this.artist = new ArtistEntity();
+    this(Defaults.getDefaultLong(), Defaults.DEFAULT_STR, new ArtistEntity(), Defaults.DEFAULT_STR);
+  }
+
+  public AlbumEntity(String name, String image) {
+    this(name, new ArtistEntity(), image);
   }
 
   public AlbumEntity(String name, ArtistEntity artist, String image) {
-    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
-    this.image = MoreObjects.firstNonNull(image, Defaults.DEFAULT_STR);
-    this.artist = MoreObjects.firstNonNull(artist, new ArtistEntity());
+    this(Defaults.getDefaultLong(), name, artist, image);
   }
 
   public AlbumEntity(Long id, String name, ArtistEntity artist, String image) {
@@ -47,36 +46,48 @@ public class AlbumEntity {
     this.artist = MoreObjects.firstNonNull(artist, new ArtistEntity());
   }
 
+
+  // Getters
   public long getId() {
     return id;
-  }
-
-  public void setId(long id) {
-    this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
-  }
-
   public String getImage() {
     return image;
-  }
-
-  public void setImage(String image) {
-    this.image = MoreObjects.firstNonNull(image, Defaults.DEFAULT_STR);
   }
 
   public ArtistEntity getArtist() {
     return artist;
   }
 
+
+  // Setters
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
+  }
+
   public void setArtist(ArtistEntity artist) {
-    this.artist = MoreObjects.firstNonNull(artist, new ArtistEntity());
+    this.setArtist(artist, true);
+  }
+
+  void setArtist(ArtistEntity artist, boolean shouldAdd) {
+    this.artist = artist;
+
+    if (artist != null && shouldAdd) {
+      artist.addAlbum(this, false);
+    }
   }
 
   @Override
