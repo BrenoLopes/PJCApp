@@ -1,16 +1,16 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
+import br.balladesh.pjcappbackend.controllers.exceptions.ForbiddenException;
 import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.repository.ArtistRepository;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.ArtistsService;
+import br.balladesh.pjcappbackend.services.UsersService;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/artists")
 public class GetAllArtistsController {
-  private final ArtistRepository artistRepository;
+  private final ArtistsService artistsService;
+  private final UsersService usersService;
+
   private final Logger logger = LoggerFactory.getLogger(GetAllArtistsController.class);
 
-  public GetAllArtistsController(ArtistRepository artistRepository) {
-    this.artistRepository = artistRepository;
+  @Autowired
+  public GetAllArtistsController(ArtistsService artistsService, UsersService usersService) {
+    this.artistsService = artistsService;
+    this.usersService = usersService;
   }
 
   @GetMapping("/list")
@@ -34,29 +38,28 @@ public class GetAllArtistsController {
       @RequestParam(defaultValue = "10") int pagesize,
       @RequestParam(defaultValue = "ASC") String direction
   ) {
-    if(HasNull.withParams(this.artistRepository).check()){
-      this.logger.error("GetAllArtistsController::getAllArtists Required constructors was not autowired.");
-      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     try {
-      Sort sort = Sort.by("name");
+      UserEntity currentUser = this.usersService.getCurrentAuthenticatedUser()
+          .orElseThrow(ForbiddenException::new);
 
-      if (!direction.equalsIgnoreCase("asc")) {
-        sort = sort.descending();
-      }
-
-      Pageable _page = PageRequest.of(page, pagesize, sort);
-      Page<ArtistEntity> artistPages = this.artistRepository.findAll(_page);
-
-      return ResponseEntity.ok(new PagedArtistResponseBody(artistPages));
-    } catch(Exception e) {
-      this.logger.error(
-          "GetAllArtistsController::getAllArtists Could not process the request because of an error! Error: {}",
-          e.getMessage()
+      Page<ArtistEntity> response = this.artistsService.getAllArtists(
+          currentUser,
+          page,
+          pagesize,
+          direction
       );
 
+      return ResponseEntity.ok(new PagedArtistResponseBody(response));
+    } catch (ForbiddenException e) {
+      return ResponseCreator.create(HttpStatus.FORBIDDEN);
+    } catch (Exception e) {
+      this.logError(e);
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private void logError(Exception e) {
+    String message = "GetAllArtistsController::getALlArtists. Error: {}";
+    logger.error(message, e.getMessage());
   }
 }
