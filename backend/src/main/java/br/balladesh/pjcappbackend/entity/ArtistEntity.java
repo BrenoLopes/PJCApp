@@ -77,9 +77,9 @@ public class ArtistEntity {
     if (o == null || getClass() != o.getClass()) return false;
     ArtistEntity that = (ArtistEntity) o;
     return id == that.id
-        && Objects.equal(this.name, that.name)
-        && Objects.equal(this.albums, that.albums)
-        && Objects.equal(this.owner, that.owner);
+        && name.equals(that.name)
+        && albums.equals(that.albums)
+        && owner.equals(that.owner);
   }
 
   @Override
