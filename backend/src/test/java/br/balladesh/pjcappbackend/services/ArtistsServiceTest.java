@@ -260,7 +260,7 @@ class ArtistsServiceTest {
 
     Executable fn = () -> {
       ArtistsService testTarget = new ArtistsService(this.artistRepository);
-      testTarget.setAnArtist(id, "RobotDoingDelivery", null, owner);
+      testTarget.setAnArtist(id, Optional.of("RobotDoingDelivery"), Optional.empty(), owner);
     };
 
     assertThrows(NotFoundException.class, fn);
@@ -276,7 +276,7 @@ class ArtistsServiceTest {
 
     Executable fn = () -> {
       ArtistsService testTarget = new ArtistsService(this.artistRepository);
-      testTarget.setAnArtist(id, "RobotDoingDelivery", null, owner);
+      testTarget.setAnArtist(id, Optional.of("RobotDoingDelivery"), Optional.empty(), owner);
     };
 
     assertThrows(InternalServerErrorException.class, fn);
@@ -302,7 +302,7 @@ class ArtistsServiceTest {
         .when(this.artistRepository).save(modified);
 
     ArtistsService testTarget = new ArtistsService(this.artistRepository);
-    boolean result = testTarget.setAnArtist(id, newName, lists, owner);
+    boolean result = testTarget.setAnArtist(id, Optional.of(newName), Optional.of(lists), owner);
 
     assertTrue(result);
   }

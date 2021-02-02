@@ -147,22 +147,21 @@ public class ArtistsService {
    * @throws NotFoundException if there is no artist with this id.
    * @throws InternalServerErrorException if an error happened in the process.
    */
-  public boolean setAnArtist(long id, String newName, List<AlbumEntity> newAlbums, UserEntity owner) throws InternalServerErrorException, NotFoundException {
+  public boolean setAnArtist(long id, Optional<String> newName, Optional<List<AlbumEntity>> newAlbums, UserEntity owner) throws InternalServerErrorException, NotFoundException {
     try {
       notNull(owner, "The owner cannot be null");
 
-      if (this.isAllOfThemNull(newName, newAlbums))
+      if (!newName.isPresent() && !newAlbums.isPresent())
         return false;
 
       ArtistEntity theArtist = this.artistRepository.findByIdAndOwner(id, owner)
           .orElseThrow(NotFoundException::new);
 
-      if (newName != null)
-        theArtist.setName(newName);
+      newName.ifPresent(theArtist::setName);
 
-      if (newAlbums != null && newAlbums.size() > 0) {
+      if (newAlbums.isPresent()) {
         theArtist.getAlbums().clear();
-        theArtist.getAlbums().addAll(newAlbums);
+        theArtist.getAlbums().addAll(newAlbums.get());
       }
 
       return theArtist.equals(this.artistRepository.save(theArtist));
@@ -190,10 +189,6 @@ public class ArtistsService {
 
   private boolean isInDescendingOrder(String direction) {
     return direction != null && !direction.equalsIgnoreCase("asc");
-  }
-
-  private boolean isAllOfThemNull(Object... args) {
-    return AllNull.withParams(args).check();
   }
 
   private boolean isOneOfThemNull(Object... args) {
