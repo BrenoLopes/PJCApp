@@ -13,14 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class PagedAlbumResponseBodyTest {
 
   PagedAlbumResponseBody target;
-  AlbumEntity album;
+  AlbumEntity album = new AlbumEntity("randomname", "");
 
   public PagedAlbumResponseBodyTest() {
     UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
-    ArtistEntity artist = new ArtistEntity("randomartist", Lists.newArrayList(), robotUser);
-    this.album = new AlbumEntity("randomname", artist, Defaults.DEFAULT_STR);
-
-    artist.getAlbums().add(album);
+    ArtistEntity artist = new ArtistEntity("randomartist", robotUser);
+    artist.addAlbum(album);
 
     this.target = new PagedAlbumResponseBody(
         ImmutableList.of(album),
