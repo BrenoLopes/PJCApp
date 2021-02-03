@@ -1,21 +1,22 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
-import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.repository.ArtistRepository;
-import org.assertj.core.util.Lists;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.ArtistsService;
+import br.balladesh.pjcappbackend.services.UsersService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,38 +24,75 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class GetFilterArtistControllerTest {
   @Mock
-  private ArtistRepository artistRepository;
+  private ArtistsService artistsService;
+  @Mock
+  private UsersService usersService;
 
-  @Test
-  void testNullRepository() {
-    GetFilterArtistController testTarget = new GetFilterArtistController(null);
-    ResponseEntity<?> result = testTarget.filterArtistBy(1L,null, 0, 10, "asc");
+  private GetFilterArtistController testTarget;
 
-    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+  private final UserEntity userEntity = new UserEntity(
+      "TheRobot",
+      "robot@robocop.com",
+      "123456BCrypted"
+  );
+
+  @BeforeEach
+  private void setUp() {
+    this.testTarget = new GetFilterArtistController(this.artistsService, this.usersService);
   }
 
   @Test
-  void testWithValidRepository() {
-    long id = 1L;
-    String name = "ohno2";
+  void badRequest_filteringAnArtist_NoParameter() {
+    ResponseEntity<?> response = testTarget.filterArtistBy(null, null);
+    assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
 
-    ArtistEntity artist1 = new ArtistEntity(1L, "ohno1", Lists.newArrayList());
-    ArtistEntity artist2 = new ArtistEntity(2L, "ohno2", Lists.newArrayList());
-    List<ArtistEntity> artists = Lists.newArrayList(artist1);
+  @Test
+  void forbidden_filteringAnArtist_BecauseTheUserHaventLoaded() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.empty());
 
-    Page<ArtistEntity> aPage = new PageImpl<>(artists);
+    ResponseEntity<?> response = testTarget.filterArtistBy(1L, null);
 
-    Pageable page = PageRequest.of(0, 10, Sort.by("name"));
-    Mockito.when(this.artistRepository.findByIdAndName(id, null, page))
-        .thenReturn(aPage);
+    assertSame(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
 
-    PagedArtistResponseBody expected = new PagedArtistResponseBody(aPage);
+  @Test
+  void internalServerError_filteringAnArtist_BecauseTheDbDied() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(userEntity));
 
-    GetFilterArtistController testTarget = new GetFilterArtistController(this.artistRepository);
-    ResponseEntity<PagedArtistResponseBody> result = (ResponseEntity<PagedArtistResponseBody>)
-        testTarget.filterArtistBy( id, null, 0, 10, "asc");
+    final long theId = 1;
 
-    assertSame(HttpStatus.OK, result.getStatusCode());
-    assertEquals(expected, result.getBody());
+    Mockito
+        .doThrow(new InternalServerErrorException("Whoops"))
+        .when(this.artistsService).searchAnArtist(theId, userEntity);
+
+    ResponseEntity<?> response = testTarget.filterArtistBy(theId, null);
+
+    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void success_filteringAnArtist() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(userEntity));
+
+    final long theId = 1;
+
+    ArtistEntity expected = new ArtistEntity(theId, "Robot", new ArrayList<>(), this.userEntity);
+
+    Mockito
+        .doReturn(expected)
+        .when(this.artistsService).searchAnArtist(theId, userEntity);
+
+    ResponseEntity<?> response = testTarget.filterArtistBy(theId, null);
+
+    assertSame(HttpStatus.OK, response.getStatusCode());
+    assertTrue(response.getBody() instanceof ArtistEntity);
+    assertEquals(expected, response.getBody());
   }
 }

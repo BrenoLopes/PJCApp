@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.entity.security;
 
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import org.junit.jupiter.api.Test;
 

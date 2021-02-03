@@ -48,19 +48,6 @@ class EditAlbumRequestBodyTest {
   }
 
   @Test
-  void getArtistId() {
-    long expected = 123;
-    EditAlbumRequestBody underTest = new EditAlbumRequestBody(
-        1L,
-        null,
-        null,
-        expected
-    );
-
-    assertEquals(expected, underTest.getArtistId());
-  }
-
-  @Test
   void getFromNull() {
     EditAlbumRequestBody underTest = new EditAlbumRequestBody(
         null,
@@ -72,6 +59,5 @@ class EditAlbumRequestBodyTest {
     assertEquals(Defaults.getDefaultLong(), underTest.getAlbumId());
     assertEquals(Defaults.DEFAULT_STR, underTest.getName());
     assertEquals(new EmptyMultipartFile(), underTest.getImage());
-    assertEquals(Defaults.getDefaultLong(), underTest.getArtistId());
   }
 }

@@ -15,8 +15,7 @@ class AddAlbumRequestBodyTest {
     AddAlbumRequestBody classToTest = new AddAlbumRequestBody(
         expected,
         null,
-        56L,
-        "OhNo"
+        56L
     );
 
     assertEquals(expected, classToTest.getName());
@@ -27,25 +26,10 @@ class AddAlbumRequestBodyTest {
     AddAlbumRequestBody classToTest = new AddAlbumRequestBody(
         "RandomAlbum",
         null,
-        56L,
-        "OhNo"
+        56L
     );
 
     assertEquals(new EmptyMultipartFile(), classToTest.getImage());
-  }
-
-  @Test
-  void getArtistName() {
-    String expected = "OhNo";
-
-    AddAlbumRequestBody classToTest = new AddAlbumRequestBody(
-        "RandomAlbum",
-        null,
-        56L,
-        expected
-    );
-
-    assertEquals(expected, classToTest.getArtistName());
   }
 
   @Test
@@ -55,8 +39,7 @@ class AddAlbumRequestBodyTest {
     AddAlbumRequestBody classToTest = new AddAlbumRequestBody(
         "RandomAlbum",
         null,
-        expected,
-        null
+        expected
     );
 
     assertEquals(expected, classToTest.getArtistId());
@@ -67,13 +50,11 @@ class AddAlbumRequestBodyTest {
     AddAlbumRequestBody classToTest = new AddAlbumRequestBody(
         null,
         null,
-        null,
         null
     );
 
     assertEquals(Defaults.DEFAULT_STR, classToTest.getName());
     assertEquals(new EmptyMultipartFile(), classToTest.getImage());
     assertEquals(Defaults.getDefaultLong(), classToTest.getArtistId());
-    assertEquals(Defaults.DEFAULT_STR, classToTest.getArtistName());
   }
 }
