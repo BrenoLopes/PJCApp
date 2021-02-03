@@ -132,13 +132,15 @@ public class ArtistEntity {
     if (o == null || getClass() != o.getClass()) return false;
     ArtistEntity that = (ArtistEntity) o;
     return id == that.id
-        && name.equals(that.name)
-        && owner.equals(that.owner);
+        && Objects.equal(this.name, that.name)
+        && Objects.equal(this.albums, that.albums)
+        && Objects.equal(this.owner.getName(), that.owner.getName())
+        && Objects.equal(this.owner.getId(), that.owner.getId());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, name, albums);
+    return Objects.hashCode(id, name, albums, owner.getName(), owner.getId());
   }
 
   @JsonValue

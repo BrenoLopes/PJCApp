@@ -98,12 +98,13 @@ public class AlbumEntity {
     return id == that.id
         && Objects.equal(this.name, that.name)
         && Objects.equal(this.image, that.image)
-        && Objects.equal(this.artist, that.artist);
+        && Objects.equal(this.artist.getName(), that.artist.getName())
+        && Objects.equal(this.artist.getId(), that.artist.getId());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, name, image, artist);
+    return Objects.hashCode(id, name, image, artist.getName());
   }
 
   @JsonValue
@@ -124,7 +125,8 @@ public class AlbumEntity {
         .add("id", this.id)
         .add("name", this.name)
         .add("image", this.image)
-        .add("artist", this.artist)
+        .add("artistId", this.artist.getId())
+        .add("artistName", this.artist.getName())
         .toString();
   }
 }
