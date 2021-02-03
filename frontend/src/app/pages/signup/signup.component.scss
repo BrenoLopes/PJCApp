@@ -1,62 +1,21 @@
 @import "src/app/shared/variables";
 
 .container {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $primary;
+  background: linear-gradient(167.37deg, #806BFF 0%, #9281FA 100%);
 
   .form-container {
-    padding: 6rem 5rem;
-    background-color: white;
+    padding: 6rem 2rem;
+    background: linear-gradient(165.96deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);
     border-radius: 10px;
 
     h1 {
-      text-transform: uppercase;
-      text-align: center;
-      margin-bottom: 3rem;
-      font-size: 1.8rem;
-      letter-spacing: .2rem;
+      font-size: 2.5rem !important;
+      color: $primary;
     }
 
-    form {
-      max-width: 21rem;
-
-      mat-form-field {
-        width: 100%;
-        margin: .5rem 0;
-      }
-
-      button {
-        min-width: 10rem;
-        margin: 3rem auto 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-    p.after-form {
-      margin: 1.6rem 0;
-      color: #4f4f4f;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    p.login {
-      text-align: center;
-
-      a {
-        font-weight: 500;
-        color: $primary;
-        text-transform: uppercase;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
+    .sign-up a {
+      color: $primary;
+      text-transform: capitalize;
     }
   }
 }
