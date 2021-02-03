@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -207,6 +208,7 @@ public class ArtistsService {
    *
    * @throws InternalServerErrorException if an error happens in the process.
    */
+  @Transactional
   public void removeAnArtist(long id, UserEntity owner) throws InternalServerErrorException {
     try {
       this.artistRepository.deleteByIdAndOwner(id, owner);
