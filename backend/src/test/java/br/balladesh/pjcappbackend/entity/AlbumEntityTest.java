@@ -125,6 +125,5 @@ class AlbumEntityTest {
     assertEquals(Defaults.DEFAULT_STR, target.getName());
     assertEquals(Defaults.DEFAULT_STR, target.getImage());
     assertEquals(Defaults.getDefaultLong(), target.getId());
-    assertEquals(new ArtistEntity(), target.getArtist());
   }
 }

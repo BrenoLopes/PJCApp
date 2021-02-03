@@ -5,6 +5,9 @@ import br.balladesh.pjcappbackend.controllers.exceptions.ConflictException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.UserSignUpRequest;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.AlbumsService;
+import br.balladesh.pjcappbackend.services.ArtistsService;
 import br.balladesh.pjcappbackend.services.UsersService;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
 import com.google.common.collect.Lists;
@@ -22,8 +25,11 @@ public class SignUpController {
   private final UsersService usersService;
   private final Logger logger = LoggerFactory.getLogger(SignUpController.class);
 
+  private final ArtistsService artistsService;
+
   @Autowired
-  public SignUpController(UsersService usersService) {
+  public SignUpController(UsersService usersService, ArtistsService artistsService, AlbumsService albumsService) {
+    this.artistsService = artistsService;
     this.usersService = usersService;
   }
 
@@ -33,12 +39,14 @@ public class SignUpController {
       return ResponseCreator.create(HttpStatus.BAD_REQUEST);
 
     try {
-      this.usersService.addUser(
+      UserEntity currentUser = this.usersService.addUser(
           request.getName(),
           request.getUsername(),
           request.getPassword(),
           Lists.newArrayList()
       );
+
+      this.usersService.loadDefaultDatabaseData(this.artistsService, currentUser);
 
       return ResponseCreator.create(HttpStatus.OK);
     } catch (InternalServerErrorException e) {

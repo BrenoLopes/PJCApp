@@ -28,7 +28,7 @@ public class AlbumEntity {
   private ArtistEntity artist;
 
   public AlbumEntity() {
-    this(Defaults.getDefaultLong(), Defaults.DEFAULT_STR, null, Defaults.DEFAULT_STR);
+    this(Defaults.getDefaultLong(), Defaults.DEFAULT_STR, new ArtistEntity(), Defaults.DEFAULT_STR);
   }
 
   public AlbumEntity(String name, String image) {

@@ -34,7 +34,7 @@ public class ArtistEntity {
   private UserEntity owner;
 
   public ArtistEntity() {
-    this(Defaults.DEFAULT_STR, Lists.newArrayList(), null);
+    this(Defaults.DEFAULT_STR, Lists.newArrayList(), new UserEntity());
   }
 
   public ArtistEntity(String name, UserEntity owner) {
@@ -133,7 +133,6 @@ public class ArtistEntity {
     ArtistEntity that = (ArtistEntity) o;
     return id == that.id
         && name.equals(that.name)
-        && albums.equals(that.albums)
         && owner.equals(that.owner);
   }
 

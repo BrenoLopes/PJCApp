@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -174,9 +172,11 @@ class UsersServiceTest {
         .thenReturn(user);
 
     UsersService testTarget = new UsersService(this.userRepository, this.passwordEncoder);
-    boolean result = testTarget.addUser(name, email, password, artistEntities);
+    UserEntity result = testTarget.addUser(name, email, password, artistEntities);
 
-    assertTrue(result);
+    assertEquals(name, result.getName());
+    assertEquals(email, result.getEmail());
+    assertNotEquals(password, result.getPassword());
   }
 
   @Test
@@ -350,15 +350,14 @@ class UsersServiceTest {
     final String name = "Robot";
     final String email = "robot@robot.com";
     final String encodedPassword = "2133dwdkqpwdkqwpokd";
-    final List<ArtistEntity> artistEntities = Lists.newArrayList();
 
-    final UserEntity originalUser = new UserEntity(name, email, encodedPassword, artistEntities);
+    final ArtistEntity artistEntity = new ArtistEntity("myusb", null);
 
-    final List<ArtistEntity> newArtistEntities = Lists.newArrayList(
-        new ArtistEntity("myusb", Lists.newArrayList(), originalUser)
-    );
+    final UserEntity originalUser = new UserEntity(name, email, encodedPassword);
+    originalUser.addArtist(artistEntity);
 
-    final UserEntity newUser = new UserEntity(name, email, encodedPassword, newArtistEntities);
+    final UserEntity newUser = new UserEntity("Robot2", email, encodedPassword);
+    newUser.addArtist(artistEntity);
 
     Mockito
         .when(this.userRepository.findById(userId))
@@ -369,7 +368,7 @@ class UsersServiceTest {
         .thenReturn(newUser);
 
     UsersService testTarget = new UsersService(this.userRepository, this.passwordEncoder);
-    boolean result = testTarget.editUser(userId, null, null, null, newArtistEntities);
+    boolean result = testTarget.editUser(userId, "Robot2", null, null, Lists.newArrayList());
 
     assertTrue(result);
   }

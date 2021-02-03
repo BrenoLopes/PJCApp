@@ -45,9 +45,7 @@ class ArtistEntityTest {
     AlbumEntity albumTwo = new AlbumEntity("ohno2", target, "FakeMinIOObject");
     AlbumEntity albumThree = new AlbumEntity("ohno3", target, "FakeMinIOObject");
 
-    target.getAlbums().add(albumOne);
-    target.getAlbums().add(albumTwo);
-    target.getAlbums().add(albumThree);
+    target.addAlbums(Lists.newArrayList(albumOne, albumTwo, albumThree));
 
     List<AlbumEntity> expected = ImmutableList.copyOf(Lists.newArrayList(albumOne, albumTwo, albumThree));
 

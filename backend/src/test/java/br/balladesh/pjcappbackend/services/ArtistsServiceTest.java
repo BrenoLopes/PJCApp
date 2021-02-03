@@ -287,11 +287,13 @@ class ArtistsServiceTest {
     final long id = 1;
 
     String name = "RobotDoingCaptcha";
-    ArtistEntity expected = new ArtistEntity(name, Lists.newArrayList(), owner);
+    ArtistEntity expected = new ArtistEntity(name, owner);
 
     String newName = "RobotDoingDelivery";
     List<AlbumEntity> lists = Lists.newArrayList(new AlbumEntity("Hiii", expected, ""));
-    ArtistEntity modified = new ArtistEntity(newName, lists, owner);
+
+    ArtistEntity modified = new ArtistEntity(newName, owner);
+    modified.addAlbums(lists);
 
     Mockito
         .doReturn(Optional.of(expected))

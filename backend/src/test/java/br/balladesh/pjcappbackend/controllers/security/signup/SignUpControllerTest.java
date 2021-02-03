@@ -5,6 +5,9 @@ import br.balladesh.pjcappbackend.controllers.exceptions.ConflictException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.UserSignUpRequest;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.AlbumsService;
+import br.balladesh.pjcappbackend.services.ArtistsService;
 import br.balladesh.pjcappbackend.services.UsersService;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -24,6 +29,12 @@ class SignUpControllerTest {
   @Mock
   private UsersService usersService;
 
+  @Mock
+  private ArtistsService artistsService;
+
+  @Mock
+  private AlbumsService albumsService;
+
   @Test
   void shouldReturnOk() throws BadRequestException, ConflictException, InternalServerErrorException {
     UserSignUpRequest request = new UserSignUpRequest(
@@ -31,6 +42,8 @@ class SignUpControllerTest {
         "Mr. Robot",
         "123456"
     );
+
+    UserEntity expected = new UserEntity(1L, request.getName(), request.getUsername(), request.getPassword(), new ArrayList<>());
 
     Mockito
         .when(
@@ -42,9 +55,9 @@ class SignUpControllerTest {
                     Lists.newArrayList()
                 )
         )
-        .thenReturn(true);
+        .thenReturn(expected);
 
-    SignUpController testTarget = new SignUpController(this.usersService);
+    SignUpController testTarget = new SignUpController(this.usersService, artistsService, albumsService);
     ResponseEntity<MessageResponse> response = testTarget.registerUser(request);
 
     assertSame(HttpStatus.OK, response.getStatusCode());
@@ -52,7 +65,7 @@ class SignUpControllerTest {
 
   @Test
   void shouldReturnBadRequest_NoRequest() {
-    SignUpController testTarget = new SignUpController(this.usersService);
+    SignUpController testTarget = new SignUpController(this.usersService, artistsService, albumsService);
     ResponseEntity<MessageResponse> response = testTarget.registerUser(null);
 
     assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -71,7 +84,7 @@ class SignUpControllerTest {
         .when(this.usersService)
         .addUser(request.getName(), request.getUsername(), request.getPassword(), Lists.newArrayList());
 
-    SignUpController testTarget = new SignUpController(this.usersService);
+    SignUpController testTarget = new SignUpController(this.usersService, artistsService, albumsService);
     ResponseEntity<MessageResponse> response = testTarget.registerUser(request);
 
     assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -91,7 +104,7 @@ class SignUpControllerTest {
         .addUser(request.getName(), request.getUsername(), request.getPassword(), Lists.newArrayList());
 
 
-    SignUpController testTarget = new SignUpController(this.usersService);
+    SignUpController testTarget = new SignUpController(this.usersService, artistsService, albumsService);
     ResponseEntity<MessageResponse> response = testTarget.registerUser(request);
 
     assertSame(HttpStatus.CONFLICT, response.getStatusCode());
@@ -110,7 +123,7 @@ class SignUpControllerTest {
         .when(this.usersService)
         .addUser(request.getName(), request.getUsername(), request.getPassword(), Lists.newArrayList());
 
-    SignUpController testTarget = new SignUpController(this.usersService);
+    SignUpController testTarget = new SignUpController(this.usersService, artistsService, albumsService);
     ResponseEntity<MessageResponse> response = testTarget.registerUser(request);
 
     assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

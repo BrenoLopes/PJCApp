@@ -8,10 +8,7 @@ import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.ArtistRepository;
-import br.balladesh.pjcappbackend.utilities.predicates.AllNull;
 import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
-import com.google.common.collect.Lists;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,14 +115,30 @@ public class ArtistsService {
     if (this.isOneOfThemNull(name, owner))
       throw new BadRequestException("The name and author must not be null");
 
+    return this.addArtist(new ArtistEntity(name, new ArrayList<>(), owner));
+  }
+
+  /**
+   * Persist the an artist with an entity
+   *
+   * @param artistEntity the entity with the artist's information
+   * @return true if successful and false otherwise
+   *
+   * @throws ConflictException if the artist already exist in the database
+   * @throws InternalServerErrorException if an error happens in the process
+   * @throws BadRequestException if the entity is null
+   */
+  public boolean addArtist(ArtistEntity artistEntity) throws ConflictException, InternalServerErrorException, BadRequestException {
+    if (artistEntity == null)
+      throw new BadRequestException("The name and author must not be null");
+
     try {
-      if (this.artistRepository.findByNameAndOwner(name, owner).isPresent())
+      if (this.artistRepository.findByNameAndOwner(artistEntity.getName(), artistEntity.getOwner()).isPresent())
         throw new ConflictException("This artist already exists.");
 
-      ArtistEntity theEntity = new ArtistEntity(name, Lists.newArrayList(), owner);
-      ArtistEntity received = this.artistRepository.save(theEntity);
+      ArtistEntity received = this.artistRepository.save(artistEntity);
 
-      return theEntity.equals(received);
+      return artistEntity.equals(received);
     } catch (ConflictException e) {
       throw e;
     } catch (Exception e) {
@@ -159,9 +173,8 @@ public class ArtistsService {
 
       newName.ifPresent(theArtist::setName);
 
-      if (newAlbums.isPresent()) {
-        theArtist.getAlbums().clear();
-        theArtist.getAlbums().addAll(newAlbums.get());
+      if (newAlbums.isPresent() && newAlbums.get().size() > 0) {
+        theArtist.addAlbums(newAlbums.get());
       }
 
       return theArtist.equals(this.artistRepository.save(theArtist));
@@ -169,6 +182,26 @@ public class ArtistsService {
       throw e;
     } catch (Exception e) {
       throw new InternalServerErrorException(e.getMessage());
+    }
+  }
+
+  /**
+   * Saves the entity directly to the database
+   *
+   * @param artistEntity the artist entity to persist into the database
+   *
+   * @return true if successfull, false otherwise
+   *
+   * @throws InternalServerErrorException if an error happens in the process
+   */
+  public boolean saveAlbumEntity(ArtistEntity artistEntity) throws InternalServerErrorException {
+    if (artistEntity == null)
+      return false;
+
+    try {
+      return artistEntity.equals(this.artistRepository.save(artistEntity));
+    } catch (Exception e) {
+      throw new InternalServerErrorException(e);
     }
   }
 

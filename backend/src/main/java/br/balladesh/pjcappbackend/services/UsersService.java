@@ -1,11 +1,13 @@
 package br.balladesh.pjcappbackend.services;
 
 import br.balladesh.pjcappbackend.controllers.exceptions.*;
+import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.security.UserRepository;
 import br.balladesh.pjcappbackend.utilities.predicates.AllNull;
 import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -108,7 +110,7 @@ public class UsersService {
    *
    * @return true if successfull, false if something fails
    */
-  public boolean addUser(String name, String email, String password, List<ArtistEntity> artistEntities)
+  public UserEntity addUser(String name, String email, String password, List<ArtistEntity> artistEntities)
       throws InternalServerErrorException, BadRequestException, ConflictException {
     if (this.isOneOfThemNull(name, email, password, artistEntities))
       throw new BadRequestException("No argument in this method must be null!");
@@ -123,9 +125,8 @@ public class UsersService {
       String encodedPassword = this.passwordEncoder.encode(password);
 
       UserEntity userEntity = new UserEntity(name, email, encodedPassword, artistEntities);
-      UserEntity resultEntity = this.userRepository.save(userEntity);
 
-      return resultEntity.equals(userEntity);
+      return this.userRepository.save(userEntity);
     } catch (ConflictException e) {
       throw e;
     } catch (Exception e) {
@@ -203,6 +204,45 @@ public class UsersService {
     } catch (Exception e) {
       throw new InternalServerErrorException(e.getMessage());
     }
+  }
+
+  public void loadDefaultDatabaseData(ArtistsService artistsService, UserEntity theUser) {
+    try {
+      ArtistEntity serjArtist = new ArtistEntity("Serj tankian", theUser);
+      serjArtist.addAlbums(Lists.newArrayList(
+          new AlbumEntity("Harakiri", ""),
+          new AlbumEntity("Black Blooms", ""),
+          new AlbumEntity("The Rough Dog", "")
+      ));
+
+      ArtistEntity mikeArtist = new ArtistEntity("Mike Shinoda", theUser);
+      mikeArtist.addAlbums(Lists.newArrayList(
+          new AlbumEntity("The Rising Tied", ""),
+          new AlbumEntity("Post Traumatic", ""),
+          new AlbumEntity("Post Traumatic EP", ""),
+          new AlbumEntity("Where'd You Go", "")
+      ));
+
+      ArtistEntity michelArtist = new ArtistEntity("Michel Teló", theUser);
+      michelArtist.addAlbums(Lists.newArrayList(
+          new AlbumEntity("Bem Sertanejo", ""),
+          new AlbumEntity("Bem Sertanejo - O Show (Ao Vivo)", ""),
+          new AlbumEntity("Bem Sertanejo - (1a Temporada) - EP", "")
+      ));
+
+      ArtistEntity gunsArtist = new ArtistEntity("Guns N' Roses", theUser);
+      gunsArtist.addAlbums(Lists.newArrayList(
+          new AlbumEntity("Use Your IIIlusion I", ""),
+          new AlbumEntity("Use Your IIIlusion II", ""),
+          new AlbumEntity("Greatest Hits", "")
+      ));
+
+      artistsService.addArtist(serjArtist);
+      artistsService.addArtist(mikeArtist);
+      artistsService.addArtist(michelArtist);
+      artistsService.addArtist(gunsArtist);
+
+    } catch (Exception ignored) {}
   }
 
   private boolean isEmailInvalid(String email) {
