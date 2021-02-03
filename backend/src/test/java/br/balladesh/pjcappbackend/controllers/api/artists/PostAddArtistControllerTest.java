@@ -58,8 +58,8 @@ class PostAddArtistControllerTest {
         .thenReturn(Optional.of(this.robotUser));
 
     Mockito
-        .when(this.artistsService.addArtist(anyString(), any()))
-        .thenThrow(new InternalServerErrorException("Whoops"));
+        .doThrow(new InternalServerErrorException("Whoops"))
+        .when(this.artistsService).addArtist(anyString(), any());
 
     ResponseEntity<?> response = testTarget.addArtist(new AddArtistRequestDTO("RandomName"));
 
@@ -73,8 +73,8 @@ class PostAddArtistControllerTest {
         .thenReturn(Optional.of(this.robotUser));
 
     Mockito
-        .when(this.artistsService.addArtist(anyString(), any()))
-        .thenReturn(false);
+        .doNothing()
+        .when(this.artistsService).addArtist(anyString(), any());
 
     ResponseEntity<?> response = testTarget.addArtist(new AddArtistRequestDTO("RandomName"));
 
@@ -88,8 +88,8 @@ class PostAddArtistControllerTest {
         .thenReturn(Optional.of(this.robotUser));
 
     Mockito
-        .when(this.artistsService.addArtist(anyString(), any()))
-        .thenReturn(true);
+        .doNothing()
+        .when(this.artistsService).addArtist(anyString(), any());
 
     ResponseEntity<?> result = this.testTarget.addArtist(new AddArtistRequestDTO("RandomName"));
 

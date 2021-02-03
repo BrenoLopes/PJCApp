@@ -243,11 +243,12 @@ class ArtistsServiceTest {
         .doReturn(expected)
         .when(this.artistRepository).save(expected);
 
+    Executable fn = () -> {
+      ArtistsService testTarget = new ArtistsService(this.artistRepository);
+      testTarget.addArtist(name, owner);
+    };
 
-    ArtistsService testTarget = new ArtistsService(this.artistRepository);
-    boolean result = testTarget.addArtist(name, owner);
-
-    assertTrue(result);
+    assertDoesNotThrow(fn);
   }
 
   @Test

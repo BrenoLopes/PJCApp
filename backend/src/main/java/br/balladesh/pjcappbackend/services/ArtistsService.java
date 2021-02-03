@@ -105,30 +105,27 @@ public class ArtistsService {
    * @param name The name of the artist
    * @param owner The user that is inserting this artist
    *
-   * @return true if the persistence was successful and false if not.
-   *
    * @throws ConflictException If an artist with this name already exists
    * @throws InternalServerErrorException If an error happened in the process
    * @throws BadRequestException If the name or owner is null
    */
-  public boolean addArtist(String name, UserEntity owner) throws ConflictException, InternalServerErrorException, BadRequestException {
+  public void addArtist(String name, UserEntity owner) throws ConflictException, InternalServerErrorException, BadRequestException {
     if (this.isOneOfThemNull(name, owner))
       throw new BadRequestException("The name and author must not be null");
 
-    return this.addArtist(new ArtistEntity(name, new ArrayList<>(), owner));
+    this.addArtist(new ArtistEntity(name, new ArrayList<>(), owner));
   }
 
   /**
    * Persist the an artist with an entity
    *
    * @param artistEntity the entity with the artist's information
-   * @return true if successful and false otherwise
    *
    * @throws ConflictException if the artist already exist in the database
    * @throws InternalServerErrorException if an error happens in the process
    * @throws BadRequestException if the entity is null
    */
-  public boolean addArtist(ArtistEntity artistEntity) throws ConflictException, InternalServerErrorException, BadRequestException {
+  public void addArtist(ArtistEntity artistEntity) throws ConflictException, InternalServerErrorException, BadRequestException {
     if (artistEntity == null)
       throw new BadRequestException("The name and author must not be null");
 
@@ -136,9 +133,7 @@ public class ArtistsService {
       if (this.artistRepository.findByNameAndOwner(artistEntity.getName(), artistEntity.getOwner()).isPresent())
         throw new ConflictException("This artist already exists.");
 
-      ArtistEntity received = this.artistRepository.save(artistEntity);
-
-      return artistEntity.equals(received);
+      this.artistRepository.save(artistEntity);
     } catch (ConflictException e) {
       throw e;
     } catch (Exception e) {

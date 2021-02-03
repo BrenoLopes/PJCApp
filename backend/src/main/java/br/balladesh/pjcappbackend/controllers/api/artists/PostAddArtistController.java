@@ -1,5 +1,6 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
+import br.balladesh.pjcappbackend.controllers.exceptions.ConflictException;
 import br.balladesh.pjcappbackend.controllers.exceptions.ForbiddenException;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
@@ -38,10 +39,11 @@ public class PostAddArtistController {
       final UserEntity currentUser = this.usersService.getCurrentAuthenticatedUser()
           .orElseThrow(ForbiddenException::new);
 
-      if (!this.artistsService.addArtist(request.getName(), currentUser))
-        throw new InternalServerErrorException("Failed to save this artist into the database");
+      this.artistsService.addArtist(request.getName(), currentUser);
 
       return ResponseCreator.create(HttpStatus.OK);
+    } catch (ConflictException e) {
+      return ResponseCreator.create(HttpStatus.CONFLICT);
     } catch (ForbiddenException e) {
       return ResponseCreator.create(HttpStatus.FORBIDDEN);
     } catch (Exception e) {
@@ -52,6 +54,6 @@ public class PostAddArtistController {
 
   private void logError(Exception e) {
     String message = "PostAddArtistController::addArtist. Error: {}";
-    logger.error(message, e.getMessage());
+    logger.error(message, e);
   }
 }
