@@ -35,7 +35,7 @@ public class DeleteAlbumController {
   }
 
   @DeleteMapping
-  public ResponseEntity<MessageResponse> deleteAlbum(@RequestParam Optional<Long> requestId) {
+  public ResponseEntity<MessageResponse> deleteAlbum(@RequestParam(name = "id") Optional<Long> requestId) {
     try {
       long theId = requestId.orElseThrow(BadRequestException::new);
 
