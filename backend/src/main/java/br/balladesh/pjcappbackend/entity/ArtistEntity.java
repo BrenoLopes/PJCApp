@@ -26,7 +26,7 @@ public class ArtistEntity {
   @Column(nullable = false, unique = true)
   private String name;
 
-  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "artist")
+  @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.MERGE}, mappedBy = "artist")
   private List<AlbumEntity> albums;
 
   @ManyToOne(cascade = CascadeType.ALL)
