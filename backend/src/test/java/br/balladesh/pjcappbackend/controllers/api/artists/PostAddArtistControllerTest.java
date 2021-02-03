@@ -73,10 +73,12 @@ class PostAddArtistControllerTest {
         .thenReturn(Optional.of(this.robotUser));
 
     Mockito
-        .doNothing()
+        .doThrow(new InternalServerErrorException("Whoops"))
         .when(this.artistsService).addArtist(anyString(), any());
 
-    ResponseEntity<?> response = testTarget.addArtist(new AddArtistRequestDTO("RandomName"));
+    ResponseEntity<?> response = testTarget.addArtist(
+        new AddArtistRequestDTO("RandomName")
+    );
 
     assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }

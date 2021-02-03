@@ -75,7 +75,7 @@ class PutEditAlbumControllerTest {
 
   @Test
   void internalServerError_WhenEditingAnAlbum_BecauseTheDbDied() {
-    ArtistEntity theArtist = new ArtistEntity("wooo", new ArrayList<>(), this.currentUser);
+    ArtistEntity theArtist = new ArtistEntity("wooo", this.currentUser);
 
     AlbumEntity theAlbum = new AlbumEntity("aaa", "");
     theAlbum.setArtist(theArtist);
@@ -85,7 +85,7 @@ class PutEditAlbumControllerTest {
         .thenReturn(Optional.of(this.currentUser));
 
     Mockito
-        .when(this.albumsService.searchAnAlbum(this.request.getAlbumId(), this.currentUser))
+        .when(this.albumsService.searchAnAlbumWithoutMinIO(this.request.getAlbumId(), this.currentUser))
         .thenReturn(theAlbum);
 
     Mockito
@@ -109,7 +109,7 @@ class PutEditAlbumControllerTest {
         .thenReturn(Optional.of(this.currentUser));
 
     Mockito
-        .when(this.albumsService.searchAnAlbum(this.request.getAlbumId(), this.currentUser))
+        .when(this.albumsService.searchAnAlbumWithoutMinIO(this.request.getAlbumId(), this.currentUser))
         .thenReturn(theAlbum);
 
     Mockito
