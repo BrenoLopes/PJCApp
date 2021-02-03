@@ -3,6 +3,7 @@ package br.balladesh.pjcappbackend.controllers.api.albums;
 import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.albums.EditAlbumRequestBody;
+import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.services.AlbumsService;
@@ -76,13 +77,16 @@ class PutEditAlbumControllerTest {
   void internalServerError_WhenEditingAnAlbum_BecauseTheDbDied() {
     ArtistEntity theArtist = new ArtistEntity("wooo", new ArrayList<>(), this.currentUser);
 
+    AlbumEntity theAlbum = new AlbumEntity("aaa", "");
+    theAlbum.setArtist(theArtist);
+
     Mockito
         .when(this.usersService.getCurrentAuthenticatedUser())
         .thenReturn(Optional.of(this.currentUser));
 
     Mockito
-        .when(this.artistsService.searchAnArtist(this.request.getArtistId(), this.currentUser))
-        .thenReturn(theArtist);
+        .when(this.albumsService.searchAnAlbum(this.request.getAlbumId(), this.currentUser))
+        .thenReturn(theAlbum);
 
     Mockito
         .doThrow(new InternalServerErrorException("Whoops"))
@@ -97,41 +101,23 @@ class PutEditAlbumControllerTest {
   void success_WhenEditingAnAlbum() {
     ArtistEntity theArtist = new ArtistEntity("wooo", new ArrayList<>(), this.currentUser);
 
+    AlbumEntity theAlbum = new AlbumEntity("aaa", "");
+    theAlbum.setArtist(theArtist);
+
     Mockito
         .when(this.usersService.getCurrentAuthenticatedUser())
         .thenReturn(Optional.of(this.currentUser));
 
     Mockito
-        .when(this.artistsService.searchAnArtist(this.request.getArtistId(), this.currentUser))
-        .thenReturn(theArtist);
+        .when(this.albumsService.searchAnAlbum(this.request.getAlbumId(), this.currentUser))
+        .thenReturn(theAlbum);
 
     Mockito
-        .when(this.albumsService.setAnAlbum(this.request.getAlbumId(), this.currentUser, this.request.getName(), this.request.getImage()))
-        .thenReturn(true);
+        .doNothing()
+        .when(this.albumsService).setAnAlbum(this.request.getAlbumId(), this.currentUser, this.request.getName(), this.request.getImage());
 
     ResponseEntity<MessageResponse> response = testTarget.editAlbum(this.request);
 
     assertSame(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
-  void internalServerError_WhenEditingAnAlbumButTheSavingFails() {
-    ArtistEntity theArtist = new ArtistEntity("wooo", new ArrayList<>(), this.currentUser);
-
-    Mockito
-        .when(this.usersService.getCurrentAuthenticatedUser())
-        .thenReturn(Optional.of(this.currentUser));
-
-    Mockito
-        .when(this.artistsService.searchAnArtist(this.request.getArtistId(), this.currentUser))
-        .thenReturn(theArtist);
-
-    Mockito
-        .when(this.albumsService.setAnAlbum(this.request.getAlbumId(), this.currentUser, this.request.getName(), this.request.getImage()))
-        .thenReturn(false);
-
-    ResponseEntity<MessageResponse> response = testTarget.editAlbum(this.request);
-
-    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 }

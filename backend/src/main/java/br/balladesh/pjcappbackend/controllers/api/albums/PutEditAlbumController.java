@@ -1,16 +1,14 @@
 package br.balladesh.pjcappbackend.controllers.api.albums;
 
-import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
 import br.balladesh.pjcappbackend.controllers.exceptions.ForbiddenException;
 import br.balladesh.pjcappbackend.controllers.exceptions.NotFoundException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.albums.EditAlbumRequestBody;
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.services.AlbumsService;
 import br.balladesh.pjcappbackend.services.ArtistsService;
 import br.balladesh.pjcappbackend.services.UsersService;
-import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +49,9 @@ public class PutEditAlbumController {
       UserEntity currentUser = this.usersService.getCurrentAuthenticatedUser()
           .orElseThrow(ForbiddenException::new);
 
-      ArtistEntity artist = this.artistsService.searchAnArtist(data.getArtistId(), currentUser);
+      AlbumEntity theAlbum = this.albumsService.searchAnAlbumWithoutMinIO(data.getAlbumId(), currentUser);
 
-      if (!artist.getOwner().equals(currentUser))
+      if (!theAlbum.getArtist().getOwner().equals(currentUser))
         throw new ForbiddenException("You don't have permissions to use this artist!");
 
       String newName = null;
@@ -65,8 +63,7 @@ public class PutEditAlbumController {
       if (data.getImage() != null && !data.getImage().isEmpty())
         newImage = data.getImage();
 
-      if (!this.albumsService.setAnAlbum(data.getAlbumId(), currentUser, newName, newImage))
-        throw new InternalServerErrorException("Failed to save the data into the database. Data: " + data.toString());
+      this.albumsService.setAnAlbum(data.getAlbumId(), currentUser, newName, newImage);
 
       return ResponseCreator.create(HttpStatus.OK);
     } catch (NotFoundException e) {
