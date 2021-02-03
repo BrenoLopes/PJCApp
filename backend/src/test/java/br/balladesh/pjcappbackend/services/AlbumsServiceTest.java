@@ -390,10 +390,12 @@ class AlbumsServiceTest {
         .when(this.albumRepository.save(theNewAlbum))
         .thenReturn(theNewAlbum);
 
-    AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
-    boolean result = testTarget.addAnAlbum(theArtist, owner, albumName, theFile);
+    Executable fn = () -> {
+      AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
+      testTarget.addAnAlbum(theArtist, owner, albumName, theFile);
+    };
 
-    assertTrue(result);
+    assertDoesNotThrow(fn);
   }
 
   @Test

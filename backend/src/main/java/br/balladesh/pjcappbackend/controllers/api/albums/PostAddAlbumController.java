@@ -52,8 +52,7 @@ public class PostAddAlbumController {
       if (!artist.getOwner().equals(currentUser))
         throw new ForbiddenException("You don't have permissions to use this artist!");
 
-      if (!this.albumsService.addAnAlbum(artist, currentUser, data.getName(), data.getImage()))
-        throw new InternalServerErrorException("Failed to save the data into the database. Data: " + data.toString());
+      this.albumsService.addAnAlbum(artist, currentUser, data.getName(), data.getImage());
 
       return ResponseCreator.create(HttpStatus.OK);
     } catch (ForbiddenException e) {

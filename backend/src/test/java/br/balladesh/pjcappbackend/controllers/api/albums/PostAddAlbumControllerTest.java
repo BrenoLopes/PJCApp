@@ -164,32 +164,11 @@ class PostAddAlbumControllerTest {
         .thenReturn(theArtist);
 
     Mockito
-        .when(this.albumsService.addAnAlbum(theArtist, this.currentUser, this.request.getName(), this.request.getImage()))
-        .thenReturn(true);
+        .doNothing()
+        .when(this.albumsService).addAnAlbum(theArtist, this.currentUser, this.request.getName(), this.request.getImage());
 
     ResponseEntity<MessageResponse> response = testTarget.addAlbum(this.request);
 
     assertSame(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
-  void internalServerError_WhenReturningFalseWhenAddingAnAlbum() {
-    ArtistEntity theArtist = new ArtistEntity("wooo", new ArrayList<>(), this.currentUser);
-
-    Mockito
-        .when(this.usersService.getCurrentAuthenticatedUser())
-        .thenReturn(Optional.of(this.currentUser));
-
-    Mockito
-        .when(this.artistsService.searchAnArtist(this.request.getArtistId(), this.currentUser))
-        .thenReturn(theArtist);
-
-    Mockito
-        .when(this.albumsService.addAnAlbum(theArtist, this.currentUser, this.request.getName(), this.request.getImage()))
-        .thenReturn(false);
-
-    ResponseEntity<MessageResponse> response = testTarget.addAlbum(this.request);
-
-    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 }

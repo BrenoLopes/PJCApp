@@ -182,7 +182,7 @@ public class AlbumsService {
    * @throws BadRequestException if any parameter is null
    * @throws InternalServerErrorException if an error happens in the process
    */
-  public boolean addAnAlbum(ArtistEntity artistEntity, UserEntity owner, String name, MultipartFile image) throws ConflictException, InternalServerErrorException, BadRequestException {
+  public void addAnAlbum(ArtistEntity artistEntity, UserEntity owner, String name, MultipartFile image) throws ConflictException, InternalServerErrorException, BadRequestException {
     if (this.isOneOfThemNull(artistEntity, owner, name, image))
       throw new BadRequestException("No parameter can be null!");
 
@@ -193,7 +193,7 @@ public class AlbumsService {
       String fileName = this.minIOService.uploadFile(image);
       AlbumEntity theEntity = new AlbumEntity(name, artistEntity, fileName);
 
-      return theEntity.equals(this.albumRepository.save(theEntity));
+      this.albumRepository.save(theEntity);
     } catch (ConflictException e) {
       throw e;
     } catch (Exception e) {
@@ -246,7 +246,7 @@ public class AlbumsService {
    *
    * @throws InternalServerErrorException if an error happens in the process
    */
-  public boolean saveAlbumEntity(AlbumEntity albumEntity) throws InternalServerErrorException {
+  public boolean addAlbumEntity(AlbumEntity albumEntity) throws InternalServerErrorException {
     if (albumEntity == null)
       return false;
 
