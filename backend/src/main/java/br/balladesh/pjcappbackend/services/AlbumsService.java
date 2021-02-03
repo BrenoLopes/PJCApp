@@ -238,6 +238,26 @@ public class AlbumsService {
   }
 
   /**
+   * Saves the entity directly to the database
+   *
+   * @param albumEntity the album entity to persist into the database
+   *
+   * @return true if successfull, false otherwise
+   *
+   * @throws InternalServerErrorException if an error happens in the process
+   */
+  public boolean saveAlbumEntity(AlbumEntity albumEntity) throws InternalServerErrorException {
+    if (albumEntity == null)
+      return false;
+
+    try {
+      return albumEntity.equals(this.albumRepository.save(albumEntity));
+    } catch (Exception e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  /**
    * Deletes this album from the database
    *
    * @param albumId the album's id
