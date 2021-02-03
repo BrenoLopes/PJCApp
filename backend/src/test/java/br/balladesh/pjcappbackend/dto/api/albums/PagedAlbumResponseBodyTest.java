@@ -2,6 +2,7 @@ package br.balladesh.pjcappbackend.dto.api.albums;
 
 import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
+import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -12,13 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class PagedAlbumResponseBodyTest {
 
   PagedAlbumResponseBody target;
-  AlbumEntity album;
+  AlbumEntity album = new AlbumEntity("randomname", "");
 
   public PagedAlbumResponseBodyTest() {
-    ArtistEntity artist = new ArtistEntity("randomartist", Lists.newArrayList());
-    this.album = new AlbumEntity("randomname", artist, Defaults.DEFAULT_STR);
-
-    artist.getAlbums().add(album);
+    UserEntity robotUser = new UserEntity("robot", "robot@robot.com", "123456");
+    ArtistEntity artist = new ArtistEntity("randomartist", robotUser);
+    artist.addAlbum(album);
 
     this.target = new PagedAlbumResponseBody(
         ImmutableList.of(album),

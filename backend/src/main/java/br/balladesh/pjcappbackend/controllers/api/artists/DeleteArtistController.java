@@ -1,18 +1,19 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
+import br.balladesh.pjcappbackend.controllers.exceptions.BadRequestException;
+import br.balladesh.pjcappbackend.controllers.exceptions.ForbiddenException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.repository.ArtistRepository;
-import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.ArtistsService;
+import br.balladesh.pjcappbackend.services.UsersService;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -20,35 +21,43 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/artists")
 public class DeleteArtistController {
-  private final ArtistRepository artistRepository;
+  private final ArtistsService artistsService;
+  private final UsersService usersService;
+
   private final Logger logger = LoggerFactory.getLogger(DeleteArtistController.class);
 
-  public DeleteArtistController(ArtistRepository artistRepository) {
-    this.artistRepository = artistRepository;
+  @Autowired
+  public DeleteArtistController(ArtistsService artistsService, UsersService usersService) {
+    this.artistsService = artistsService;
+    this.usersService = usersService;
   }
 
   @DeleteMapping
-  public ResponseEntity<MessageResponse> deleteArtist(@RequestParam(defaultValue = Defaults.DEFAULT_LONG) long id) {
-    if(HasNull.withParams(this.artistRepository).check()){
-      this.logger.error("DeleteArtistController::deleteArtist Required constructors was not autowired.");
-      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    if (id == Defaults.getDefaultLong())
-      return ResponseCreator.create(HttpStatus.BAD_REQUEST);
-
+  public ResponseEntity<MessageResponse> deleteArtist(Optional<Long> id) {
     try {
-      Optional<ArtistEntity> _artist = this.artistRepository.findById(id);
-      if (!_artist.isPresent())
-        return ResponseCreator.create(HttpStatus.NOT_FOUND);
+      long theId = id.orElseThrow(BadRequestException::new);
 
-      this.artistRepository.delete(_artist.get());
+      UserEntity thisUser = this.usersService.getCurrentAuthenticatedUser()
+          .orElseThrow(ForbiddenException::new);
+
+      this.artistsService.removeAnArtist(theId, thisUser);
 
       return ResponseCreator.create(HttpStatus.OK);
+
+    } catch(ForbiddenException e) {
+      return ResponseCreator.create(HttpStatus.FORBIDDEN);
+
+    } catch(BadRequestException e) {
+      return ResponseCreator.create(HttpStatus.BAD_REQUEST);
+
     } catch (Exception e) {
-      String message = "DeleteArtistController::deleteArtist failed to delete the user from the repo. Error: {}";
-      logger.error(message, e.getMessage());
+      this.logError(e);
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private void logError(Exception e) {
+    String message = "DeleteArtistController::deleteArtist failed to delete the user from the repo. Error: {}";
+    logger.error(message, e.getMessage());
   }
 }

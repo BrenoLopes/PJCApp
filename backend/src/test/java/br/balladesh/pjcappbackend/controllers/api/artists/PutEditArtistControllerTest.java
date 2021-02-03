@@ -1,9 +1,12 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
+import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.api.artists.PutArtistRequestDTO;
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.repository.ArtistRepository;
-import com.google.common.collect.Lists;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.ArtistsService;
+import br.balladesh.pjcappbackend.services.UsersService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -16,45 +19,90 @@ import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class PutEditArtistControllerTest {
   @Mock
-  private ArtistRepository artistRepository;
+  private ArtistsService artistsService;
+  @Mock
+  private UsersService usersService;
+
+  private PutEditArtistController testTarget;
+
+  @BeforeEach
+  void setUp() {
+    this.testTarget = new PutEditArtistController(this.artistsService, this.usersService);
+  }
+
+  private final UserEntity robotUser = new UserEntity(
+      "robot",
+      "robot@robot.com",
+      "123456"
+  );
+
+  private final PutArtistRequestDTO request = new PutArtistRequestDTO(1L, "NewName");
 
   @Test
-  void testNullRepository() {
-    PutArtistRequestDTO request = new PutArtistRequestDTO(1L, "ohno1");
-    PutEditArtistController testTarget = new PutEditArtistController(null);
-    ResponseEntity<?> result = testTarget.editArtist(request);
+  void forbidden_NoUserAuthenticated_WhenEditingAnArtist() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.empty());
 
-    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+    ResponseEntity<MessageResponse> response = testTarget.editArtist(request);
+    assertSame(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
   @Test
-  void testEditNonExistentArtist() {
-    PutArtistRequestDTO request = new PutArtistRequestDTO(1L, "ohno1");
-    PutEditArtistController testTarget = new PutEditArtistController(this.artistRepository);
+  void internalServerError_DbFailed_WhenEditingAnArtist() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.robotUser));
 
-    Mockito.when(this.artistRepository.findById(1L)).thenReturn(Optional.empty());
+    Mockito
+        .lenient()
+        .when(this.artistsService.setAnArtist(anyInt(), Optional.of(anyString()), any(), any()))
+        .thenThrow(new InternalServerErrorException("Whoops"));
 
-    ResponseEntity<?> result = testTarget.editArtist(request);
+    ResponseEntity<MessageResponse> response = testTarget.editArtist(request);
 
-    assertSame(HttpStatus.NOT_FOUND, result.getStatusCode());
+    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
-  void testEditExistentArtist() {
-    PutArtistRequestDTO request = new PutArtistRequestDTO(1L, "ohno1");
-    PutEditArtistController testTarget = new PutEditArtistController(this.artistRepository);
+  void internalServerError_DbFailedToAdd_WhenEditingAnArtist() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.robotUser));
 
-    ArtistEntity entity = new ArtistEntity(1L, "ohno", Lists.newArrayList());
-    Mockito.when(this.artistRepository.findById(1L)).thenReturn(Optional.of(entity));
-    Mockito.when(this.artistRepository.save(entity))
-        .thenReturn(new ArtistEntity(1L, "ohno1", Lists.newArrayList()));
+    Mockito
+        .lenient()
+        .when(this.artistsService.setAnArtist(anyInt(), Optional.of(anyString()), any(), any()))
+        .thenReturn(false);
 
-    ResponseEntity<?> result = testTarget.editArtist(request);
+    ResponseEntity<MessageResponse> response = testTarget.editArtist(request);
+
+    assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void success_WhenEditingAnArtist() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(this.robotUser));
+
+    Mockito
+        .lenient()
+        .when(this.artistsService.setAnArtist(
+            request.getId(),
+            Optional.of(request.getName()),
+            Optional.empty(),
+            this.robotUser)
+        )
+        .thenReturn(true);
+
+    ResponseEntity<MessageResponse> result = this.testTarget.editArtist(request);
 
     assertSame(HttpStatus.OK, result.getStatusCode());
   }

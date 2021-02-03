@@ -8,14 +8,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class EditAlbumRequestBody {
   private final String name;
-  private final long id, artistId;
+  private final long id;
   private final MultipartFile image;
 
   public EditAlbumRequestBody(Long id, String name, MultipartFile image, Long artistId) {
     this.id = MoreObjects.firstNonNull(id, Defaults.getDefaultLong());
     this.name = MoreObjects.firstNonNull(name, Defaults.DEFAULT_STR);
     this.image = MoreObjects.firstNonNull(image, new EmptyMultipartFile());
-    this.artistId = MoreObjects.firstNonNull(artistId, Defaults.getDefaultLong());
   }
 
   public String getName() {
@@ -30,24 +29,19 @@ public class EditAlbumRequestBody {
     return this.id;
   }
 
-  public long getArtistId() {
-    return artistId;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     EditAlbumRequestBody that = (EditAlbumRequestBody) o;
     return id == that.id
-        && artistId == that.artistId
         && name.equals(that.name)
         && image.equals(that.image);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, image, id, artistId);
+    return Objects.hashCode(name, image, id);
   }
 
   @Override
@@ -56,7 +50,6 @@ public class EditAlbumRequestBody {
         .add("id", this.id)
         .add("name", this.name)
         .add("image", this.image)
-        .add("artistId", this.artistId)
         .toString();
   }
 }

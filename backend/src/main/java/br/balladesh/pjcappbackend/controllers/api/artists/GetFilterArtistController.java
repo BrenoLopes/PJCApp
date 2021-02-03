@@ -1,17 +1,16 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
-import br.balladesh.pjcappbackend.dto.api.artists.PagedArtistResponseBody;
+import br.balladesh.pjcappbackend.controllers.exceptions.ForbiddenException;
+import br.balladesh.pjcappbackend.controllers.exceptions.NotFoundException;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.repository.ArtistRepository;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.ArtistsService;
+import br.balladesh.pjcappbackend.services.UsersService;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
-import br.balladesh.pjcappbackend.utilities.predicates.HasNull;
+import br.balladesh.pjcappbackend.utilities.predicates.AllNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,51 +21,55 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/artists")
 public class GetFilterArtistController {
-  private final ArtistRepository artistRepository;
+  private final ArtistsService artistsService;
+  private final UsersService usersService;
+
   private final Logger logger = LoggerFactory.getLogger(GetFilterArtistController.class);
 
   @Autowired
-  public GetFilterArtistController(ArtistRepository artistRepository)
-  {
-    this.artistRepository = artistRepository;
+  public GetFilterArtistController(ArtistsService artistsService, UsersService usersService) {
+    this.artistsService = artistsService;
+    this.usersService = usersService;
   }
 
   @GetMapping()
   public ResponseEntity<?> filterArtistBy(
       @RequestParam(required = false) Long id,
-      @RequestParam(required = false) String name,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "ASC") String direction
+      @RequestParam(required = false) String name
   ) {
-    if(HasNull.withParams(this.artistRepository).check()){
-      this.logger.error("GetFilterArtistController::filterArtistBy Required constructors was not autowired.");
-      return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    if (this.isAllOfThemNull(id, name))
+      return ResponseCreator.create(HttpStatus.BAD_REQUEST);
 
     try {
-      Sort sort = Sort.by("name");
-      if (!direction.equalsIgnoreCase("asc"))
-        sort = sort.descending();
+      UserEntity currentUser = this.usersService.getCurrentAuthenticatedUser()
+          .orElseThrow(ForbiddenException::new);
 
-      Pageable pageable = PageRequest.of(page, size, sort);
-      Page<ArtistEntity> paged = this.artistRepository.findByIdAndName(id, name, pageable);
+      ArtistEntity response;
 
-      return ResponseEntity.ok(new PagedArtistResponseBody(paged));
-    } catch(NumberFormatException e) {
-      this.logger.error(
-          "GetFilterArtistController::filterArtistBy Could not parse the parameters and filter the list of artists: {}",
-          e.getMessage()
-      );
+      if (id != null)
+        response = this.artistsService.searchAnArtist(id, currentUser);
+      else
+        response = this.artistsService.searchAnArtist(name, currentUser);
 
-      return ResponseCreator.create(HttpStatus.BAD_REQUEST);
-    } catch(Exception e) {
-      this.logger.error(
-          "GetFilterArtistController::filterArtistBy Could not process the request and filter the list of artists: {}",
-          e.getMessage()
-      );
+      return ResponseEntity.ok(response);
+    } catch(ForbiddenException e) {
+      return ResponseCreator.create(HttpStatus.FORBIDDEN);
 
+    } catch(NotFoundException e) {
+      return ResponseCreator.create(HttpStatus.NOT_FOUND);
+
+    } catch (Exception e) {
+      this.logError(e);
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private boolean isAllOfThemNull(Object... args) {
+    return AllNull.withParams(args).check();
+  }
+
+  private void logError(Exception e) {
+    String message = "GetFilterArtistController::filterArtistBy. Error: {}";
+    logger.error(message, e.getMessage());
   }
 }

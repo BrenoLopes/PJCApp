@@ -60,7 +60,7 @@ public class PagedArtistResponseBody {
     return currentPage == that.currentPage
         && totalPages == that.totalPages
         && totalItems == that.totalItems
-        && Objects.equals(artists, that.artists);
+        && artists.equals(that.artists);
   }
 
   @Override

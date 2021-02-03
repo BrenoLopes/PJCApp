@@ -1,10 +1,10 @@
 package br.balladesh.pjcappbackend.controllers.api.artists;
 
+import br.balladesh.pjcappbackend.controllers.exceptions.InternalServerErrorException;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
-import br.balladesh.pjcappbackend.entity.ArtistEntity;
-import br.balladesh.pjcappbackend.repository.ArtistRepository;
-import br.balladesh.pjcappbackend.utilities.defaults.Defaults;
-import com.google.common.collect.Lists;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.ArtistsService;
+import br.balladesh.pjcappbackend.services.UsersService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -22,45 +22,77 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class DeleteArtistControllerTest {
   @Mock
-  ArtistRepository artistRepository;
+  private ArtistsService artistsService;
+
+  @Mock
+  private UsersService usersService;
 
   @Test
-  void testDeleteNullUser() {
-    long id = Defaults.getDefaultLong();
+  void badRequest_WhenDeletingAnArtist_NoId() {
+    DeleteArtistController testTarget = new DeleteArtistController(this.artistsService, this.usersService);
 
-    DeleteArtistController controller = new DeleteArtistController(this.artistRepository);
-    ResponseEntity<MessageResponse> response = controller.deleteArtist(id);
-
-    if (response.getBody() == null)
-      fail();
+    ResponseEntity<MessageResponse> response = testTarget.deleteArtist(Optional.empty());
 
     assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertTrue(response.getBody().getMessage().length() > 1);
   }
 
   @Test
-  void testInvalidRepository() {
-    long id = 1;
+  void forbidden_WhenDeletingAnArtist_BecauseTheUserHaventLoaded() {
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.empty());
 
-    DeleteArtistController controller = new DeleteArtistController(null);
-    ResponseEntity<MessageResponse> response = controller.deleteArtist(id);
+    DeleteArtistController testTarget = new DeleteArtistController(this.artistsService, this.usersService);
+    ResponseEntity<MessageResponse> response = testTarget.deleteArtist(Optional.of(1L));
+
+    assertSame(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  void internalServerError_WhenDeletingAnArtist_BecauseTheDbDied() {
+    UserEntity userEntity = new UserEntity(
+        "TheRobot",
+        "robot@robocop.com",
+        "123456BCrypted"
+    );
+
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(userEntity));
+
+    final long theId = 1;
+
+    Mockito
+        .doThrow(new InternalServerErrorException("Whoops"))
+        .when(this.artistsService).removeAnArtist(theId, userEntity);
+
+    DeleteArtistController testTarget = new DeleteArtistController(this.artistsService, this.usersService);
+    ResponseEntity<MessageResponse> response = testTarget.deleteArtist(Optional.of(theId));
 
     assertSame(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    assertTrue(response.getBody().getMessage().length() > 1);
   }
 
   @Test
-  void testValidRepository() {
-    long id = 1;
+  void success_WhenDeletingAnArtist() {
+    UserEntity userEntity = new UserEntity(
+        "TheRobot",
+        "robot@robocop.com",
+        "123456BCrypted"
+    );
 
-    Optional<ArtistEntity> result = Optional.of(new ArtistEntity("ohno", Lists.newArrayList()));
-    Mockito.when(this.artistRepository.findById(id)).thenReturn(result);
-    Mockito.doNothing().when(this.artistRepository).delete(result.get());
+    Mockito
+        .when(this.usersService.getCurrentAuthenticatedUser())
+        .thenReturn(Optional.of(userEntity));
 
-    DeleteArtistController controller = new DeleteArtistController(this.artistRepository);
-    ResponseEntity<MessageResponse> response = controller.deleteArtist(id);
+    final long theId = 1;
+
+    Mockito
+        .doNothing()
+        .when(this.artistsService).removeAnArtist(theId, userEntity);
+
+    DeleteArtistController testTarget = new DeleteArtistController(this.artistsService, this.usersService);
+    ResponseEntity<MessageResponse> response = testTarget.deleteArtist(Optional.of(theId));
 
     assertSame(HttpStatus.OK, response.getStatusCode());
-    assertTrue(response.getBody().getMessage().length() > 1);
   }
 }
