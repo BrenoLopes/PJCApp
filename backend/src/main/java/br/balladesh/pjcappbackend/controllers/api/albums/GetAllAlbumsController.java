@@ -31,9 +31,9 @@ public class GetAllAlbumsController {
     this.usersService = usersService;
   }
 
-  @GetMapping("/list/{artistId}")
+  @GetMapping("/list")
   public ResponseEntity<?> getAllAlbums(
-      @PathVariable long artistId,
+      @RequestParam(name = "artistid") long artistId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int pagesize,
       @RequestParam(defaultValue = "ASC") String direction
