@@ -29,7 +29,7 @@ public class ArtistEntity {
   @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.MERGE}, mappedBy = "artist")
   private List<AlbumEntity> albums;
 
-  @ManyToOne(cascade = CascadeType.MERGE)
+  @ManyToOne
   @JoinColumn(name = "author")
   private UserEntity owner;
 
