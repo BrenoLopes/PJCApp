@@ -8,11 +8,8 @@ import br.balladesh.pjcappbackend.entity.AlbumEntity;
 import br.balladesh.pjcappbackend.entity.ArtistEntity;
 import br.balladesh.pjcappbackend.entity.UserEntity;
 import br.balladesh.pjcappbackend.repository.AlbumRepository;
-import org.aspectj.lang.annotation.After;
 import org.assertj.core.util.Lists;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -53,30 +50,10 @@ class AlbumsServiceTest {
 
     AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
 
-    Executable fn = () -> {
-      testTarget.getAllAlbumsFromArtist(artistId, null, 0, 10, "asc");
-    };
+    Executable fn = () -> testTarget.getAllAlbumsFromArtist(artistId, null, 0, 10, "asc");
 
     assertThrows(BadRequestException.class, fn);
   }
-
-//  @Test
-//  public void internalServerErrorExceptionWhenGettingAllAlbumsFromArtist() {
-//    long artistId = 1;
-//
-//    Pageable page = PageRequest.of(0, 10, Sort.by("name"));
-//
-//    Mockito
-//        .when(this.albumRepository.findAllByArtistIdAndArtistOwner(artistId, owner, page))
-//        .thenThrow(new InternalServerErrorException("Whoops"));
-//
-//    Executable fn = () -> {
-//      AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
-//      testTarget.getAllAlbumsFromArtist(artistId, owner, 0, 10, "asc");
-//    };
-//
-//    assertThrows(InternalServerErrorException.class, fn);
-//  }
 
   @Test
   public void successWhenGettingAllAlbumsFromArtist() {
@@ -299,47 +276,39 @@ class AlbumsServiceTest {
   public void badRequestWhenAddingAnAlbum() {
     AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
 
-    Executable fn1 = () -> {
-      testTarget.addAnAlbum(
-          null,
-          owner,
-          "RobotDoingDelivery",
-          new MockMultipartFile("robot", new byte[0])
-      );
-    };
+    Executable fn1 = () -> testTarget.addAnAlbum(
+        null,
+        owner,
+        "RobotDoingDelivery",
+        new MockMultipartFile("robot", new byte[0])
+    );
 
     assertThrows(BadRequestException.class, fn1);
 
-    Executable fn2 = () -> {
-      testTarget.addAnAlbum(
-          new ArtistEntity("AA", Lists.newArrayList(), owner),
-          null,
-          "RobotDoingDelivery",
-          new MockMultipartFile("robot", new byte[0])
-      );
-    };
+    Executable fn2 = () -> testTarget.addAnAlbum(
+        new ArtistEntity("AA", Lists.newArrayList(), owner),
+        null,
+        "RobotDoingDelivery",
+        new MockMultipartFile("robot", new byte[0])
+    );
 
     assertThrows(BadRequestException.class, fn2);
 
-    Executable fn3 = () -> {
-      testTarget.addAnAlbum(
-          new ArtistEntity("AA", Lists.newArrayList(), owner),
-          owner,
-          null,
-          new MockMultipartFile("robot", new byte[0])
-      );
-    };
+    Executable fn3 = () -> testTarget.addAnAlbum(
+        new ArtistEntity("AA", Lists.newArrayList(), owner),
+        owner,
+        null,
+        new MockMultipartFile("robot", new byte[0])
+    );
 
     assertThrows(BadRequestException.class, fn3);
 
-    Executable fn4 = () -> {
-      testTarget.addAnAlbum(
-          new ArtistEntity("AA", Lists.newArrayList(), owner),
-          owner,
-          "RobotDoingDelivery",
-          null
-      );
-    };
+    Executable fn4 = () -> testTarget.addAnAlbum(
+        new ArtistEntity("AA", Lists.newArrayList(), owner),
+        owner,
+        "RobotDoingDelivery",
+        null
+    );
 
     assertThrows(BadRequestException.class, fn4);
   }
@@ -409,9 +378,7 @@ class AlbumsServiceTest {
         .when(this.albumRepository.findByIdAndArtistOwner(albumId, owner))
         .thenReturn(Optional.empty());
 
-    Executable fn = () -> {
-      testTarget.setAnAlbum(albumId, owner, newName, new MockMultipartFile("robot", new byte[0]));
-    };
+    Executable fn = () -> testTarget.setAnAlbum(albumId, owner, newName, new MockMultipartFile("robot", new byte[0]));
 
     assertThrows(NotFoundException.class, fn);
   }
@@ -463,22 +430,12 @@ class AlbumsServiceTest {
         .when(this.albumRepository.save(newAlbum))
         .thenReturn(newAlbum);
 
-    AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
-    boolean result = testTarget.setAnAlbum(
-        albumId,
-        owner,
-        newName,
-        theFile
-    );
+    Executable fn = () -> {
+      AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
+      testTarget.setAnAlbum(albumId, owner, newName, theFile);
+    };
 
-    assertTrue(result);
-  }
-
-  @Test
-  public void failWhenEditingAnAlbumWithoutParameters() {
-    AlbumsService testTarget = new AlbumsService(this.albumRepository, this.minIOService);
-
-    assertFalse(testTarget.setAnAlbum(1, null, null, null));
+    assertDoesNotThrow(fn);
   }
 
   @Test

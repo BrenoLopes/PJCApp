@@ -93,6 +93,31 @@ public class AlbumsService {
   }
 
   /**
+   * Search an album with given id and user without loading the image from MinIO
+   *
+   * @param albumId the album's id to be searched
+   * @param owner the user who owns this album
+   * @return the AlbumEntity
+   *
+   * @throws NotFoundException if an album with this id and owner doesn't exist
+   * @throws BadRequestException if the owner is null
+   * @throws InternalServerErrorException if an error happens in the process
+   */
+  public AlbumEntity searchAnAlbumWithoutMinIO(long albumId, UserEntity owner) throws BadRequestException, NotFoundException, InternalServerErrorException {
+    if (this.isOneOfThemNull(owner))
+      throw new BadRequestException("The owner cannot be null");
+
+    try {
+      return this.albumRepository.findByIdAndArtistOwner(albumId, owner)
+          .orElseThrow(NotFoundException::new);
+    } catch (NotFoundException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  /**
    * Search an album with given name and user
    *
    * @param name the album's name to be searched
@@ -176,7 +201,6 @@ public class AlbumsService {
    * @param owner the user who owns this artist
    * @param name the album's name
    * @param image the album's image
-   * @return true if successful, false if the transaction fails
    *
    * @throws ConflictException if the album already exists
    * @throws BadRequestException if any parameter is null
@@ -208,14 +232,13 @@ public class AlbumsService {
    * @param owner the album's owner
    * @param newName the new name for the album
    * @param newImage the new image for the album
-   * @return true if successful, false otherwise
    *
    * @throws NotFoundException if the album doesn't exist
    * @throws InternalServerErrorException if an error happens in the process
    */
-  public boolean setAnAlbum(long albumId, UserEntity owner, String newName, MultipartFile newImage) throws NotFoundException, InternalServerErrorException {
+  public void setAnAlbum(long albumId, UserEntity owner, String newName, MultipartFile newImage) throws NotFoundException, InternalServerErrorException {
     if (this.isAllOfThemNull(owner, newName, newImage))
-      return false;
+      return;
 
     try {
       AlbumEntity theEntity = this.albumRepository.findByIdAndArtistOwner(albumId, owner)
@@ -226,10 +249,15 @@ public class AlbumsService {
 
       if (newImage != null && !newImage.isEmpty()) {
         String fileName = this.minIOService.uploadFile(newImage);
+
+
+        if (!theEntity.getImage().equals(""))
+          this.minIOService.removeFile(theEntity.getImage());
+
         theEntity.setImage(fileName);
       }
 
-      return theEntity.equals(this.albumRepository.save(theEntity));
+      this.albumRepository.save(theEntity);
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
