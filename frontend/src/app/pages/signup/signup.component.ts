@@ -5,13 +5,15 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import {
   SignUpRequest,
   SignUpService,
 } from '@core/services/auth/signup/sign-up.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MyStorageService } from '@core/services/storage/my-storage.service';
 
 @Component({
   selector: 'app-signup',
@@ -24,10 +26,16 @@ export class SignupComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private signUpService: SignUpService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private localStorage: MyStorageService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    if (this.doesTheUserHaveToken()) {
+      this.navigateToHome();
+    }
+
     this.signUpForm = this.formBuilder.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -55,6 +63,14 @@ export class SignupComponent implements OnInit {
     return this.signUpForm.get('password');
   }
 
+  private doesTheUserHaveToken(): boolean {
+    return this.localStorage.getJwtToken() !== '';
+  }
+
+  private navigateToHome(): void {
+    this.router.navigateByUrl('/').then();
+  }
+
   private doTheRequest(runAfter: () => void): void {
     const request: SignUpRequest = {
       name: this.getName()?.value,
@@ -68,7 +84,15 @@ export class SignupComponent implements OnInit {
     };
 
     const onFailedSignUp = (error: HttpErrorResponse) => {
-      const message: string = this.createMessageFromError(error);
+      let message: string;
+
+      if (error.status === 401) {
+        message = 'Suas credenciais estão incorretas!';
+      } else if (error.status === 409) {
+        message = 'Whoops, este email já está cadastrado!';
+      } else {
+        message = 'Whoops, algo de errado aconteceu no servidor!';
+      }
 
       this.snackBar.open(message, 'Ok');
       runAfter();
@@ -77,15 +101,5 @@ export class SignupComponent implements OnInit {
     this.signUpService
       .requestSignUp(request)
       .subscribe(onSuccessfulSignUp, onFailedSignUp);
-  }
-
-  private createMessageFromError(error: HttpErrorResponse): string {
-    if (error.status === 401) {
-      return 'Suas credenciais estão incorretas!';
-    } else if (error.status === 409) {
-      return 'Whoops, este email já está cadastrado!';
-    }
-
-    return 'Whoops, algo de errado aconteceu no servidor!';
   }
 }
