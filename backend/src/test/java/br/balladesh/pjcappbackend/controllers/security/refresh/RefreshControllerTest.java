@@ -4,6 +4,8 @@ import br.balladesh.pjcappbackend.config.security.jwt.JwtStatus;
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
 import br.balladesh.pjcappbackend.dto.MessageResponse;
 import br.balladesh.pjcappbackend.dto.security.JwtJsonResponse;
+import br.balladesh.pjcappbackend.entity.UserEntity;
+import br.balladesh.pjcappbackend.services.UsersService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,12 +20,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 @TestPropertySource("/application.test.properties")
 class RefreshControllerTest {
+
+  @Mock
+  UsersService usersService;
 
   @Mock
   HttpServletRequest request;
@@ -36,13 +43,11 @@ class RefreshControllerTest {
     String username = "ohno@ohno.com";
     String token = this.jwtUtilities.generateJwtToken(username);
 
-    assertSame(JwtStatus.VALID, this.jwtUtilities.checkJwtStatus(token));
-
     Mockito.when(this.request.getAttribute("jwt_is_valid")).thenReturn(true);
     Mockito.when(this.request.getAttribute("jwt_token")).thenReturn(token);
     Mockito.when(this.request.getAttribute("username")).thenReturn(username);
 
-    RefreshController testTarget = new RefreshController(this.jwtUtilities);
+    RefreshController testTarget = new RefreshController(this.jwtUtilities, usersService);
 
     ResponseEntity<JwtJsonResponse> expected = new ResponseEntity<>(
         new JwtJsonResponse(username, token),
@@ -67,10 +72,12 @@ class RefreshControllerTest {
         .orElseThrow(NullPointerException::new);
 
     Mockito.when(this.request.getAttribute("claims")).thenReturn(exception.getClaims());
+    Mockito.when(this.usersService.getUserBy(anyString()))
+        .thenReturn(Optional.of(new UserEntity("ohno","ohno@ohno.com", "ohno")));
 
     this.setJwtTokenExpiration(10000);
 
-    RefreshController testTarget = new RefreshController(this.jwtUtilities);
+    RefreshController testTarget = new RefreshController(this.jwtUtilities, usersService);
     ResponseEntity<?> received = testTarget.refreshJwtToken(this.request);
 
     if (!(received.getBody() instanceof JwtJsonResponse)) {
@@ -86,7 +93,7 @@ class RefreshControllerTest {
 
   @Test
   void testInternalServerError() {
-    RefreshController testTarget = new RefreshController(this.jwtUtilities);
+    RefreshController testTarget = new RefreshController(this.jwtUtilities, usersService);
     ResponseEntity<?> received = testTarget.refreshJwtToken(this.request);
 
     if (!(received.getBody() instanceof MessageResponse))
