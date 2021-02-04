@@ -10,6 +10,7 @@ import { SignUpService } from '@core/services/auth/signup/sign-up.service';
 import { MyStorageService } from '@core/services/storage/my-storage.service';
 import { LoginService } from '@core/services/auth/login/login.service';
 import { RefreshService } from '@core/services/auth/refresh/refresh.service';
+import { GetAllArtistsService } from '@core/services/api/artists/get-all-artists.service';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -34,6 +35,7 @@ import { AppRoutingModule } from './app-routing.module';
     MyStorageService,
     LoginService,
     RefreshService,
+    GetAllArtistsService
   ],
 })
 export class CoreModule {}
