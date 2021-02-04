@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { reducer } from '@core/appstate/reducers';
 
 import { SignUpService } from '@core/services/auth/signup/sign-up.service';
+import { MyStorageService } from '@core/services/storage/my-storage.service';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -26,6 +27,6 @@ import { AppRoutingModule } from './app-routing.module';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
-  providers: [SignUpService],
+  providers: [SignUpService, MyStorageService],
 })
 export class CoreModule {}
