@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
+import { StorageServiceModule } from 'angular-webstorage-service';
 
 import { reducer } from '@core/appstate/reducers';
 
@@ -16,12 +17,13 @@ import { reducer } from '@core/appstate/reducers';
     StoreModule.forRoot({
       appContext: reducer,
     }),
+    StorageServiceModule,
   ],
   exports: [
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule
-  ]
+    HttpClientModule,
+  ],
 })
 export class CoreModule {}
