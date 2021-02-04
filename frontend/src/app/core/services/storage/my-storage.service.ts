@@ -2,47 +2,35 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class MyStorageService {
-  private tokenKey = this.getTokenKey();
-  private usernameKey = this.getUsernameKey();
+  private tokenKey = 'da_token';
+  private usernameKey = 'da_username_token';
 
   constructor() {}
 
   haveJwtToken(): boolean {
-    return localStorage.getItem(this.tokenKey) != null;
+    return this.getJwtToken() !== '';
   }
 
   haveUsername(): boolean {
-    return localStorage.getItem(this.usernameKey) != null;
+    return this.getUsername() != null;
   }
 
   getJwtToken(): string {
-    const result = localStorage.getItem(this.tokenKey);
-
-    if (result === null) {
-      return '';
-    }
-
-    return this.binaryToString(atob(result));
+    const token = localStorage.getItem(this.tokenKey);
+    return token === null ? '' : token;
   }
 
   getUsername(): string {
-    const result = localStorage.getItem(this.usernameKey);
-
-    if (result === null) {
-      return '';
-    }
-
-    return this.binaryToString(atob(result));
+    const username = localStorage.getItem(this.usernameKey);
+    return username === null ? '' : username;
   }
 
   setJwtToken(token: string): void {
-    const theToken = btoa(this.stringToBinary(token));
-    localStorage.setItem(this.tokenKey, theToken);
+    localStorage.setItem(this.tokenKey, token);
   }
 
   setUsername(username: string): void {
-    const theToken = btoa(this.stringToBinary(username));
-    localStorage.setItem(this.usernameKey, theToken);
+    localStorage.setItem(this.usernameKey, username);
   }
 
   removeJwtToken(): void {
@@ -51,29 +39,5 @@ export class MyStorageService {
 
   removeUsername(): void {
     localStorage.removeItem(this.usernameKey);
-  }
-
-  private getTokenKey(): string {
-    return btoa(this.stringToBinary('da_token'));
-  }
-
-  private getUsernameKey(): string {
-    return btoa(this.stringToBinary('da_username_token'));
-  }
-
-  private stringToBinary(text: string): string {
-    return text
-      .split('')
-      .map((char) => {
-        return char.charCodeAt(0).toString(2);
-      })
-      .join(' ');
-  }
-
-  private binaryToString(binary: string): string {
-    return binary
-      .split(' ')
-      .map((bin) => String.fromCharCode(parseInt(bin, 2)))
-      .join('');
   }
 }

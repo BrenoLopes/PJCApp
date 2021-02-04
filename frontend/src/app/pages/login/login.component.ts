@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 
 import {
   LoginRequest,
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.doesTheUserHaveToken()) {
+    if (this.localStorage.haveJwtToken()) {
       this.navigateToHome();
     }
 
@@ -41,13 +41,6 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
-  }
-
-  onSubmit(): void {
-    this.loginForm.disable();
-
-    const runWhenRequestEnds = () => this.loginForm.enable();
-    this.doTheRequest(runWhenRequestEnds);
   }
 
   getEmail(): AbstractControl | null {
@@ -58,8 +51,11 @@ export class LoginComponent implements OnInit {
     return this.loginForm.get('password');
   }
 
-  private doesTheUserHaveToken(): boolean {
-    return this.localStorage.getJwtToken() !== '';
+  onSubmit(): void {
+    this.loginForm.disable();
+
+    const runWhenRequestEnds = () => this.loginForm.enable();
+    this.doTheRequest(runWhenRequestEnds);
   }
 
   private navigateToHome(): void {
