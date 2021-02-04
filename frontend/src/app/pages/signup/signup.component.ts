@@ -8,10 +8,8 @@ import {
 
 import {
   SignUpRequest,
-  SignUpResponse,
   SignUpService,
 } from '@core/services/auth/signup/sign-up.service';
-import { ErrorObserver, NextObserver } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -40,35 +38,9 @@ export class SignupComponent implements OnInit {
   onSubmit(): void {
     this.signUpForm.disable();
 
-    const request: SignUpRequest = {
-      name: this.getName()?.value,
-      password: this.getPassword()?.value,
-      username: this.getEmail()?.value,
-    };
+    const runWhenRequestEnds = () => this.signUpForm.enable();
 
-    const onSuccessfulSignUp = () => {
-      this.snackBar.open('Cadastro feito com sucesso!');
-      this.signUpForm.enable();
-    };
-
-    const onFailedSignUp = (error: HttpErrorResponse) => {
-      let message = '';
-
-      if (error.status === 401) {
-        message = 'Suas credenciais estão incorretas!';
-      } else if (error.status === 409) {
-        message = 'Whoops, este email já está cadastrado!';
-      } else {
-        message = 'Whoops, algo de errado aconteceu no servidor!';
-      }
-
-      this.snackBar.open(message, 'Ok');
-      this.signUpForm.enable();
-    };
-
-    this.signUpService
-      .requestSignUp(request)
-      .subscribe(onSuccessfulSignUp, onFailedSignUp);
+    this.doTheRequest(runWhenRequestEnds);
   }
 
   getName(): AbstractControl | null {
@@ -81,5 +53,39 @@ export class SignupComponent implements OnInit {
 
   getPassword(): AbstractControl | null {
     return this.signUpForm.get('password');
+  }
+
+  private doTheRequest(runAfter: () => void): void {
+    const request: SignUpRequest = {
+      name: this.getName()?.value,
+      password: this.getPassword()?.value,
+      username: this.getEmail()?.value,
+    };
+
+    const onSuccessfulSignUp = () => {
+      this.snackBar.open('Cadastro feito com sucesso!');
+      runAfter();
+    };
+
+    const onFailedSignUp = (error: HttpErrorResponse) => {
+      const message: string = this.createMessageFromError(error);
+
+      this.snackBar.open(message, 'Ok');
+      runAfter();
+    };
+
+    this.signUpService
+      .requestSignUp(request)
+      .subscribe(onSuccessfulSignUp, onFailedSignUp);
+  }
+
+  private createMessageFromError(error: HttpErrorResponse): string {
+    if (error.status === 401) {
+      return 'Suas credenciais estão incorretas!';
+    } else if (error.status === 409) {
+      return 'Whoops, este email já está cadastrado!';
+    }
+
+    return 'Whoops, algo de errado aconteceu no servidor!';
   }
 }
