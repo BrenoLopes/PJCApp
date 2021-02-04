@@ -9,6 +9,7 @@ import { reducer } from '@core/appstate/reducers';
 import { SignUpService } from '@core/services/auth/signup/sign-up.service';
 import { MyStorageService } from '@core/services/storage/my-storage.service';
 import { LoginService } from '@core/services/auth/login/login.service';
+import { RefreshService } from '@core/services/auth/refresh/refresh.service';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -28,6 +29,11 @@ import { AppRoutingModule } from './app-routing.module';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
-  providers: [SignUpService, MyStorageService, LoginService],
+  providers: [
+    SignUpService,
+    MyStorageService,
+    LoginService,
+    RefreshService,
+  ],
 })
 export class CoreModule {}
