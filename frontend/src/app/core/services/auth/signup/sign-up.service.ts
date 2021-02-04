@@ -4,9 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '@env';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class SignUpService {
   private serverUrl = environment.serverUrl;
 

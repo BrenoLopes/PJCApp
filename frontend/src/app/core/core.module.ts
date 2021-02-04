@@ -6,6 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { reducer } from '@core/appstate/reducers';
 
+import { SignUpService } from '@core/services/auth/signup/sign-up.service';
+
 import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
@@ -24,5 +26,6 @@ import { AppRoutingModule } from './app-routing.module';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
+  providers: [SignUpService],
 })
 export class CoreModule {}
