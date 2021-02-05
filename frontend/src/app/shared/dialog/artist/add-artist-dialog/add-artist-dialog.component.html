@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Adicionar um artista</h1>
+<div mat-dialog-content>
+  <form [formGroup]="addForm">
+    <mat-form-field class="w-100 mt-4">
+      <input
+        matInput
+        placeholder="name"
+        formControlName="name"
+        tabindex="1"
+      />
+      <mat-error>O nome não pode estar vazio!</mat-error>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close="false">Cancelar</button>
+  <button mat-button (click)="onAddArtist()" cdkFocusInitial>Adicionar</button>
+</div>
