@@ -11,7 +11,7 @@ Este projeto foi compilado utilizando java 8 e node 14.15.4
 3. Rode ng serve dentro da pasta do frontend
 
 ## Como este projeto está dividido
-Backend:
+### Backend:
 1. config - Arquivos de configuração de token jwt, cors, etc
 2. controllers - Controladores de api e de redirecionamento de outras rotas para o app angular
 3. dto - DTOs utilizados na aplicação
@@ -20,12 +20,15 @@ Backend:
 6. services - Serviços utilizados como Token, Barreira de proteção do app contra db, etc.
 7. utilities - Classes utilitárias
 
-Frontend
+### Frontend
 1. core - Servições necessários para comunicar com o bd ou com o local storage
 2. materialdesign - Módulo para facilitar a utilização do material design
 3. pages - Componentes controladores
 4. shared - Componentes livres, como dialogs.
 
-TODOs que faltam
+### Como testar a api
+Importe o workspace do Insomnia para melhor observação
+
+### TODOs que faltam
 1. Limpar o código e refatorar os componentes do frontend
 2. Implementar a funcionalidade de busca
