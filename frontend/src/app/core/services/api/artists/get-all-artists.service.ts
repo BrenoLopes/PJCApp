@@ -29,10 +29,10 @@ export class GetAllArtistsService {
       .set('Content-Type', 'application/json; charset=utf-8')
       .set('Accept', 'application/json');
 
-    const params = new HttpParams();
-    params.set('page', isNaN(page) ? '0' : page.toString());
-    params.set('direction', direction);
-    params.set('pagesize', isNaN(pageSize) ? '10' : pageSize.toString());
+    const params = new HttpParams()
+      .set('page', isNaN(page) ? '0' : page.toString())
+      .set('direction', direction)
+      .set('pagesize', isNaN(pageSize) ? '10' : pageSize.toString());
 
     return this.http.get<PagedArtistResponse>(url, { headers, params });
   }
