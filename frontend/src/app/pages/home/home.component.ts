@@ -93,6 +93,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  doLogout(): void {
+    this.localStorage.removeUsername();
+    this.localStorage.removeJwtToken();
+
+    this.router.navigateByUrl('/login').then();
+  }
+
   getMapEntries = (): [string, Artist[]][] => {
     return Array.from(this.artistsMap.entries());
   }
