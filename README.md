@@ -31,4 +31,5 @@ Importe o workspace do Insomnia para melhor observação
 
 ### TODOs que faltam
 1. Limpar o código e refatorar os componentes do frontend
-2. Implementar a funcionalidade de busca
+2. Implementar cache no frontend e backend
+3. Implementar a funcionalidade de busca
