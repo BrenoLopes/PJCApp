@@ -1,0 +1,48 @@
+<div class="container h-100">
+  <div class="row h-100">
+    <div
+      class="offset-1 col-10 h-100 d-flex align-items-center justify-content-center"
+    >
+      <div class="form-container">
+        <h1 class="text-center font-weight-light mt-4 mb-4">Login</h1>
+        <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+          <mat-form-field class="w-100 mt-4">
+            <input
+              matInput
+              placeholder="email"
+              formControlName="email"
+              tabindex="1"
+            />
+            <mat-error>Por favor, coloque um email válido!</mat-error>
+          </mat-form-field>
+          <mat-form-field class="mt-2 mb-2 w-100">
+            <input
+              matInput
+              placeholder="senha"
+              formControlName="password"
+              type="password"
+              tabindex="1"
+            />
+            <mat-error *ngIf="getPassword()?.invalid && getPassword()?.touched">
+              Por favor, coloque uma senha com mais de 8 caracteres!
+            </mat-error>
+          </mat-form-field>
+          <button
+            class="mt-4 w-100"
+            type="submit"
+            mat-raised-button
+            color="primary"
+            tabindex="1"
+            [disabled]="loginForm.invalid || loginForm.disabled"
+          >
+            Login
+          </button>
+        </form>
+        <p class="text-center my-2 font-weight-light">ou</p>
+        <p class="login text-center my-2 font-weight-light">
+          <a [routerLink]="'/cadastrar'">Cadastrar</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

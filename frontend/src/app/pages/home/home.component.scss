@@ -1,0 +1,90 @@
+@import "src/app/shared/variables";
+
+.container {
+  .btn-primary {
+    background-color: $primary;
+  }
+
+  //background: linear-gradient(167.37deg, #806BFF 0%, #9281FA 100%);
+
+  .user-menu-container {
+    padding: 1rem;
+    background: linear-gradient(165.96deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+
+    .user-name {
+      flex-grow: 1;
+      padding: 0 .3rem;
+    }
+
+    .user-menu {
+      color: black;
+      cursor: pointer;
+      padding: 0 .3rem;
+
+      &:hover {
+        color: lighten(black, 40)
+      }
+    }
+  }
+
+  .list-container {
+    padding: 1rem;
+    background: linear-gradient(165.96deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);
+    border-radius: 10px;
+    .index-holder {
+      h2 {
+        background-color: rgba(white, 0.7);
+        border-radius: 50%;
+        width: 3rem;
+        border: 1px solid rgba(black, 0.7);
+        display: inline-block;
+        text-align: center;
+        margin: 1rem 0;
+      }
+    }
+
+    .artist-list-container {
+      .single-artist-container {
+        display: flex;
+        margin: .5rem 0;
+
+        .artist-name {
+          flex-grow: 1;
+          padding: .6rem;
+          border: 1px solid black;
+          border-right: 0;
+          border-radius: 5px 0 0 5px;
+          background-color: rgba(white, .4);
+          transition: background-color .4s ease-in-out;
+          cursor: pointer;
+
+          &:hover {
+            background-color: white;
+          }
+        }
+
+        .artist-btn {
+          background-color: $primary;
+          border-color: $primary;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+
+          &:focus {
+            box-shadow: 0 0 0 0.2rem rgba($primary, 0.5)
+          }
+
+          &:hover {
+            background-color: darken($primary, 30);
+          }
+        }
+
+        .dropdown-menu .remove-artist-btn {
+          color: red;
+        }
+      }
+    }
+  }
+}

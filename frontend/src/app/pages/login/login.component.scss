@@ -1,0 +1,21 @@
+@import "src/app/shared/variables";
+
+.container {
+  // background: linear-gradient(167.37deg, #806BFF 0%, #9281FA 100%);
+
+  .form-container {
+    padding: 6rem 2rem;
+    background: linear-gradient(165.96deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);
+    border-radius: 10px;
+
+    h1 {
+      font-size: 2.5rem !important;
+      color: $primary;
+    }
+
+    .login a {
+      color: $primary;
+      text-transform: capitalize;
+    }
+  }
+}

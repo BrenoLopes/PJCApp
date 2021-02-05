@@ -1,8 +1,9 @@
 package br.balladesh.pjcappbackend.controllers.security.refresh;
 
 import br.balladesh.pjcappbackend.config.security.jwt.JwtUtilities;
+import br.balladesh.pjcappbackend.controllers.exceptions.NotFoundException;
 import br.balladesh.pjcappbackend.dto.security.JwtJsonResponse;
-
+import br.balladesh.pjcappbackend.services.UsersService;
 import br.balladesh.pjcappbackend.utilities.factories.ResponseCreator;
 import com.google.common.base.MoreObjects;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -23,12 +24,14 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api/auth")
 public class RefreshController {
   private final JwtUtilities jwtUtils;
+  private final UsersService usersService;
 
   private static final Logger logger = LoggerFactory.getLogger(RefreshController.class);
 
   @Autowired
-  public RefreshController(JwtUtilities jwtUtils) {
+  public RefreshController(JwtUtilities jwtUtils, UsersService usersService) {
     this.jwtUtils = jwtUtils;
+    this.usersService = usersService;
   }
 
   @GetMapping("/refresh")
@@ -36,11 +39,23 @@ public class RefreshController {
     try {
       boolean isJwtStillValid = (boolean) MoreObjects.firstNonNull(request.getAttribute("jwt_is_valid"), false);
 
-      if (!isJwtStillValid)
+      if (!isJwtStillValid) {
+        final DefaultClaims claims = (DefaultClaims) request.getAttribute("claims");
+
+        if (claims == null || claims.get("sub") == null)
+          throw new NotFoundException();
+
+        String user = claims.get("sub").toString();
+
+        this.usersService.getUserBy(user).orElseThrow(NotFoundException::new);
+
         return this.showNewRefreshedJwtToken(request);
+      }
 
       return this.showCurrentJwtToken(request);
-    } catch (Exception e) {
+    } catch (NotFoundException e) {
+      return ResponseCreator.create(HttpStatus.NOT_FOUND);
+    } catch(Exception e) {
       logger.error("RefreshController::refreshJwtToken failed to refresh jwt token. Error: {}", e.getMessage());
       return ResponseCreator.create(HttpStatus.INTERNAL_SERVER_ERROR);
     }
