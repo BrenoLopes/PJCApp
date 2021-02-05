@@ -8,6 +8,7 @@ import { LoginComponent } from '@pages/login/login.component';
 import { SignupComponent } from '@pages/signup/signup.component';
 import { NotfoundComponent } from '@pages/notfound/notfound.component';
 import { SharedModule } from '@shared/shared.module';
+import { ListAllAlbumsComponent } from '@pages/albums/list-all/list-all-albums.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { SharedModule } from '@shared/shared.module';
     LoginComponent,
     SignupComponent,
     NotfoundComponent,
+    ListAllAlbumsComponent,
   ],
   imports: [CoreModule, MaterialDesignModule, SharedModule],
 })
