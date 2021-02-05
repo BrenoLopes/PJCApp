@@ -16,6 +16,11 @@ import { EditArtistService } from '@core/services/api/artists/edit-artist.servic
 import { RemoveArtistService } from '@core/services/api/artists/remove-artist.service';
 
 import { AppRoutingModule } from './app-routing.module';
+import { GetAllAlbumsService } from '@core/services/api/albums/get-all-albums.service';
+import { GetSingleArtistService } from '@core/services/api/artists/get-single-artist.service';
+import { AddAlbumService } from '@core/services/api/albums/add-album.service';
+import { EditAlbumService } from '@core/services/api/albums/edit-album.service';
+import { RemoveAlbumService } from '@core/services/api/albums/remove-album.service';
 
 @NgModule({
   declarations: [],
@@ -39,9 +44,14 @@ import { AppRoutingModule } from './app-routing.module';
     LoginService,
     RefreshService,
     GetAllArtistsService,
+    GetSingleArtistService,
     AddArtistService,
     EditArtistService,
     RemoveArtistService,
+    GetAllAlbumsService,
+    AddAlbumService,
+    EditAlbumService,
+    RemoveAlbumService,
   ],
 })
 export class CoreModule {}
