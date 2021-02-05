@@ -2,7 +2,7 @@
 
 ## Como rodar
 1. Copie o arquivo de .env.template ou .env.example e coloque as informações que queira (como tempo de expiração do token jwt)
-2. Rode o docker-compose.yml
+2. Rode o docker-compose.yml com docker-compose up -d
 
 ## Como desenvolver
 Este projeto foi compilado utilizando java 8 e node 14.15.4
