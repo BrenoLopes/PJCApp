@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit {
       }
 
       this.snackBar.open('O artista foi adicionado com sucesso!', '', {
-        duration: 3000
+        duration: 3000,
       });
       this.loadListsOfArtists(false);
     });
@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
       }
 
       this.snackBar.open('O artista foi editado com sucesso!', '', {
-        duration: 3000
+        duration: 3000,
       });
       this.loadListsOfArtists(false);
     });
@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
       }
 
       this.snackBar.open('O artista foi removido com sucesso!', '', {
-        duration: 3000
+        duration: 3000,
       });
       this.loadListsOfArtists(false);
     });
