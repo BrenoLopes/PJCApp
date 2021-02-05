@@ -9,7 +9,8 @@
     font-size: 1.6rem;
   }
 
-  background: linear-gradient(167.37deg, #806BFF 0%, #9281FA 100%);
+  //background: linear-gradient(167.37deg, #806BFF 0%, #9281FA 100%);
+
   .user-menu-container {
     padding: 1rem;
     background: linear-gradient(165.96deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);
@@ -70,8 +71,18 @@
         }
 
         .artist-btn {
+          background-color: $primary;
+          border-color: $primary;
           border-top-left-radius: 0;
           border-bottom-left-radius: 0;
+
+          &:focus {
+            box-shadow: 0 0 0 0.2rem rgba($primary, 0.5)
+          }
+
+          &:hover {
+            background-color: darken($primary, 30);
+          }
         }
 
         .dropdown-menu .remove-artist-btn {
