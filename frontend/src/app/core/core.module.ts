@@ -11,6 +11,9 @@ import { MyStorageService } from '@core/services/storage/my-storage.service';
 import { LoginService } from '@core/services/auth/login/login.service';
 import { RefreshService } from '@core/services/auth/refresh/refresh.service';
 import { GetAllArtistsService } from '@core/services/api/artists/get-all-artists.service';
+import { AddArtistService } from '@core/services/api/artists/add-artist.service';
+import { EditArtistService } from '@core/services/api/artists/edit-artist.service';
+import { RemoveArtistService } from '@core/services/api/artists/remove-artist.service';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -35,7 +38,10 @@ import { AppRoutingModule } from './app-routing.module';
     MyStorageService,
     LoginService,
     RefreshService,
-    GetAllArtistsService
+    GetAllArtistsService,
+    AddArtistService,
+    EditArtistService,
+    RemoveArtistService,
   ],
 })
 export class CoreModule {}
