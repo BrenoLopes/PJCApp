@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Editar artista.</h1>
+<div mat-dialog-content>
+  <p>Qual o novo nome que deseja dar para {{ this.data.artist.name }}</p>
+  <form [formGroup]="editForm">
+    <mat-form-field class="w-100 mt-4">
+      <input matInput placeholder="name" formControlName="name" tabindex="1" />
+      <mat-error>O nome não pode estar vazio!</mat-error>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close="false">Cancelar</button>
+  <button [disabled]="editForm.invalid || editForm.disabled" mat-button (click)="onUpdate()">Editar</button>
+</div>
