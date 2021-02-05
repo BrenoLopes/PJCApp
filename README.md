@@ -25,3 +25,7 @@ Frontend
 2. materialdesign - Módulo para facilitar a utilização do material design
 3. pages - Componentes controladores
 4. shared - Componentes livres, como dialogs.
+
+Todos que faltam
+1. Limpar o código e refatorar os componentes do frontend
+2. Implementar a funcionalidade de busca
