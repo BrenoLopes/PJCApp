@@ -8,7 +8,7 @@
     </mat-form-field>
   </form>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close="false">Cancelar</button>
   <button [disabled]="editForm.invalid || editForm.disabled" mat-button (click)="onUpdate()">Editar</button>
 </div>

@@ -12,7 +12,7 @@
     </mat-form-field>
   </form>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close="false">Cancelar</button>
-  <button mat-button (click)="onAddArtist()" cdkFocusInitial>Adicionar</button>
+  <button mat-button [disabled]="addForm.invalid || addForm.disabled" (click)="onAddArtist()" cdkFocusInitial>Adicionar</button>
 </div>
