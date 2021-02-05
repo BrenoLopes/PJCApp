@@ -21,6 +21,7 @@
       "@env": ["./environments/environment"],
       "@core/*": ["./app/core/*"],
       "@pages/*": ["./app/pages/*"],
+      "@shared/*": ["./app/shared/*"],
       "@matdesign/*": ["./app/materialdesign/*"]
     }
   },

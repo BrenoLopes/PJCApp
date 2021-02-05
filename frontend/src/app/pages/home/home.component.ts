@@ -8,9 +8,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
-import { AddArtistDialogComponent } from '../../shared/dialog/artist/add-artist-dialog/add-artist-dialog.component';
-import { DeleteArtistDialogComponent } from '../../shared/dialog/artist/delete-artist-dialog/delete-artist-dialog.component';
-import { UpdateArtistDialogComponent } from '../../shared/dialog/artist/update-artist-dialog/update-artist-dialog.component';
+import { AddArtistDialogComponent } from '@shared/dialog/artist/add-artist-dialog/add-artist-dialog.component';
+import { DeleteArtistDialogComponent } from '@shared/dialog/artist/delete-artist-dialog/delete-artist-dialog.component';
+import { UpdateArtistDialogComponent } from '@shared/dialog/artist/update-artist-dialog/update-artist-dialog.component';
 
 @Component({
   selector: 'app-home',
