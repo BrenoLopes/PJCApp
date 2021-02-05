@@ -7,14 +7,15 @@ import { HomeComponent } from '@pages/home/home.component';
 import { LoginComponent } from '@pages/login/login.component';
 import { SignupComponent } from '@pages/signup/signup.component';
 import { NotfoundComponent } from '@pages/notfound/notfound.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
     HomeComponent,
     LoginComponent,
     SignupComponent,
-    NotfoundComponent
+    NotfoundComponent,
   ],
-  imports: [CoreModule, MaterialDesignModule]
+  imports: [CoreModule, MaterialDesignModule, SharedModule],
 })
 export class PagesModule {}
