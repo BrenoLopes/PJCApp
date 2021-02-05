@@ -1,1 +1,80 @@
-<p>home works!</p>
+<div class="container h-100">
+  <div class="row h-100">
+    <div class="offset-1 col-10 h-100">
+      <div class="row">
+        <div class="col mt-4">
+          <div class="user-menu-container">
+            <div class="user-name">{{ currentUser }}</div>
+            <div class="user-menu">
+              <button
+                type="button"
+                class="btn"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <div class="dropdown-menu">
+                <button (click)="openAddDialog()" class="dropdown-item py-3" type="button">
+                  <i class="fa fa-plus pr-2" aria-hidden="true"></i>
+                  Adicionar artista
+                </button>
+                <button class="dropdown-item py-3" type="button">
+                  <i class="fas fa-sign-out-alt pr-2"></i>
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container list-container mt-2">
+        <div *ngFor="let block of getMapEntries()">
+          <div class="row">
+            <div class="col index-holder">
+              <h2 class="h4 p-2 font-weight-light">
+                {{ block[0].toUpperCase() }}
+              </h2>
+            </div>
+          </div>
+          <div class="row artist-list-container">
+            <div
+              *ngFor="let artist of block[1]"
+              class="col-12 col-md-6 col-lg-4 single-artist-container"
+            >
+              <div class="artist-name" tabindex="1">{{ artist.name }}</div>
+              <button
+                type="button"
+                class="btn btn-danger artist-btn"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <div class="dropdown-menu">
+                <button
+                  (click)="openUpdateDialog(artist)"
+                  class="dropdown-item py-3"
+                  type="button"
+                >
+                  <i class="fas fa-edit pr-2"></i>
+                  Editar Artista
+                </button>
+                <button
+                  class="dropdown-item py-3 remove-artist-btn"
+                  type="button"
+                  (click)="openDeleteDialog(artist)"
+                >
+                  <i class="far fa-trash-alt pr-2"></i>
+                  Remover Artista
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
