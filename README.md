@@ -26,6 +26,6 @@ Frontend
 3. pages - Componentes controladores
 4. shared - Componentes livres, como dialogs.
 
-Todos que faltam
+TODOs que faltam
 1. Limpar o código e refatorar os componentes do frontend
 2. Implementar a funcionalidade de busca
