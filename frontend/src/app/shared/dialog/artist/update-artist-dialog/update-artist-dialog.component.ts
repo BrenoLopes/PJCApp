@@ -39,19 +39,33 @@ export class UpdateArtistDialogComponent implements OnInit {
     return this.editForm.get('name');
   }
 
-  onUpdate = (): void => {
+  onUpdate = (cancelled = false): void => {
+    if (cancelled) {
+      this.dialogRef.close(EditReturnType.CANCELED);
+      return;
+    }
+
     const success = (r: EditArtistResponse) => {
-      this.dialogRef.close(true);
+      this.dialogRef.close(EditReturnType.ADDED);
     };
 
     const error = (e: HttpErrorResponse) => {
-      this.dialogRef.close(false);
+      if (e.status === 409) {
+        this.dialogRef.close(EditReturnType.CONFLICT);
+      }
+
+      this.dialogRef.close(EditReturnType.FAILED);
     };
 
     this.editArtistService
       .requestUpdate({ id: this.data.artist.id, name: this.getName()?.value })
       .subscribe(success, error);
-
-    this.dialogRef.close('Atualizado');
   }
+}
+
+export enum EditReturnType {
+  CONFLICT,
+  CANCELED,
+  FAILED,
+  ADDED,
 }

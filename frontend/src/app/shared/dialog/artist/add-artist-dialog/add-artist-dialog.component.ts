@@ -37,17 +37,33 @@ export class AddArtistDialogComponent implements OnInit {
     return this.addForm.get('name');
   }
 
-  onAddArtist = (): void => {
+  onAddArtist = (cancelled = false): void => {
+    if (cancelled) {
+      this.dialogRef.close(AddReturnTypes.CANCELED);
+      return;
+    }
+
     const success = (r: AddArtistResponse) => {
-      this.dialogRef.close(true);
+      this.dialogRef.close(AddReturnTypes.ADDED);
     };
 
     const error = (e: HttpErrorResponse) => {
-      this.dialogRef.close(false);
+      if (e.status === 409) {
+        this.dialogRef.close(AddReturnTypes.CONFLICT);
+      }
+
+      this.dialogRef.close(AddReturnTypes.FAILED);
     };
 
     this.addArtistService
       .requestAdd({ name: this.getName()?.value })
       .subscribe(success, error);
   }
+}
+
+export enum AddReturnTypes {
+  CONFLICT,
+  CANCELED,
+  FAILED,
+  ADDED
 }

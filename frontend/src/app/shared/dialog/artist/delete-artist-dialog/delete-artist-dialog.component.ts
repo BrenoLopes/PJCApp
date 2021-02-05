@@ -19,17 +19,28 @@ export class DeleteArtistDialogComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onDelete(): void {
+  onDelete(cancelled = false): void {
+    if (cancelled) {
+      this.dialogRef.close(RemoveReturnTypes.CANCELED);
+      return;
+    }
+
     const success = (r: AddArtistResponse) => {
-      this.dialogRef.close(true);
+      this.dialogRef.close(RemoveReturnTypes.REMOVED);
     };
 
     const error = (e: HttpErrorResponse) => {
-      this.dialogRef.close(false);
+      this.dialogRef.close(RemoveReturnTypes.FAILED);
     };
 
     this.deleteArtist
       .requestRemoval(this.data.artist.id)
       .subscribe(success, error);
   }
+}
+
+export enum RemoveReturnTypes {
+  CANCELED,
+  FAILED,
+  REMOVED,
 }
