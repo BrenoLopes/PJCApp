@@ -1,9 +1,9 @@
-import { Albums } from '@core/services/api/albums';
+import { Album } from '@core/services/api/albums';
 
 export interface Artist {
   readonly id: number;
   readonly name: string;
-  readonly albums: Albums;
+  readonly albums: Album;
   readonly created_by: string;
 }
 
