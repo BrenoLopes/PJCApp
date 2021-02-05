@@ -8,9 +8,18 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
-import { AddArtistDialogComponent } from '@shared/dialog/artist/add-artist-dialog/add-artist-dialog.component';
-import { DeleteArtistDialogComponent } from '@shared/dialog/artist/delete-artist-dialog/delete-artist-dialog.component';
-import { UpdateArtistDialogComponent } from '@shared/dialog/artist/update-artist-dialog/update-artist-dialog.component';
+import {
+  AddArtistDialogComponent,
+  AddReturnTypes,
+} from '@shared/dialog/artist/add-artist-dialog/add-artist-dialog.component';
+import {
+  DeleteArtistDialogComponent,
+  RemoveReturnTypes,
+} from '@shared/dialog/artist/delete-artist-dialog/delete-artist-dialog.component';
+import {
+  EditReturnType,
+  UpdateArtistDialogComponent,
+} from '@shared/dialog/artist/update-artist-dialog/update-artist-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -42,18 +51,27 @@ export class HomeComponent implements OnInit {
   openAddDialog = () => {
     const dialogAddRef = this.dialog.open(AddArtistDialogComponent);
 
-    dialogAddRef.afterClosed().subscribe((result) => {
-      if (!result) {
-        this.snackBar.open('Falha ao adicionar o artista.', 'Ok');
-        return;
-      }
+    dialogAddRef.afterClosed().subscribe((result: AddReturnTypes) => {
+      switch (result) {
+        case AddReturnTypes.FAILED:
+          this.snackBar.open('Falha ao adicionar o artista.', 'Ok');
+          return;
+        case AddReturnTypes.CANCELED:
+          return;
+        case AddReturnTypes.CONFLICT:
+          this.snackBar.open('Ja existe um artista com este nome!.', 'Ok');
+          return;
+        case AddReturnTypes.ADDED:
+          this.snackBar.open('O artista foi adicionado com sucesso!', '', {
+            duration: 3000,
+          });
 
-      this.snackBar.open('O artista foi adicionado com sucesso!', '', {
-        duration: 3000,
-      });
-      this.loadListsOfArtists(false);
+          this.loadListsOfArtists(false);
+          return;
+        default:
+      }
     });
-  }
+  };
 
   openUpdateDialog = (artist: Artist) => {
     const dialogUpdateRef = this.dialog.open(UpdateArtistDialogComponent, {
@@ -61,18 +79,26 @@ export class HomeComponent implements OnInit {
         artist,
       },
     });
-    dialogUpdateRef.afterClosed().subscribe((result) => {
-      if (!result) {
-        this.snackBar.open('Falha ao editar o artista.', 'Ok');
-        return;
+    dialogUpdateRef.afterClosed().subscribe((result: EditReturnType) => {
+      switch (result) {
+        case EditReturnType.FAILED:
+          this.snackBar.open('Falha ao editar o album.', 'Ok');
+          return;
+        case EditReturnType.CANCELED:
+          return;
+        case EditReturnType.CONFLICT:
+          this.snackBar.open('Ja existe um album com este nome!.', 'Ok');
+          return;
+        case EditReturnType.ADDED:
+          this.snackBar.open('O artista foi editado com sucesso!', '', {
+            duration: 3000,
+          });
+          this.loadListsOfArtists(false);
+          return;
+        default:
       }
-
-      this.snackBar.open('O artista foi editado com sucesso!', '', {
-        duration: 3000,
-      });
-      this.loadListsOfArtists(false);
     });
-  }
+  };
 
   openDeleteDialog = (artist: Artist) => {
     const dialogDeleteRef = this.dialog.open(DeleteArtistDialogComponent, {
@@ -80,18 +106,23 @@ export class HomeComponent implements OnInit {
         artist,
       },
     });
-    dialogDeleteRef.afterClosed().subscribe((result) => {
-      if (!result) {
-        this.snackBar.open('Falha ao remover o artista.', 'Ok');
-        return;
+    dialogDeleteRef.afterClosed().subscribe((result: RemoveReturnTypes) => {
+      switch (result) {
+        case RemoveReturnTypes.FAILED:
+          this.snackBar.open('Falha ao remover o album.', 'Ok');
+          return;
+        case RemoveReturnTypes.CANCELED:
+          return;
+        case RemoveReturnTypes.REMOVED:
+          this.snackBar.open('O artista foi removido com sucesso!', '', {
+            duration: 3000,
+          });
+          this.loadListsOfArtists(false);
+          return;
+        default:
       }
-
-      this.snackBar.open('O artista foi removido com sucesso!', '', {
-        duration: 3000,
-      });
-      this.loadListsOfArtists(false);
     });
-  }
+  };
 
   doLogout(): void {
     this.localStorage.removeUsername();
@@ -100,17 +131,21 @@ export class HomeComponent implements OnInit {
     this.router.navigateByUrl('/login').then();
   }
 
+  navigateToArtist(artist: Artist): void {
+    this.router.navigateByUrl(`artist/${artist.name}`).then();
+  }
+
   getMapEntries = (): [string, Artist[]][] => {
     return Array.from(this.artistsMap.entries());
-  }
+  };
 
   private doesntHaveJwtToken = (): boolean => {
     return !this.localStorage.haveJwtToken();
-  }
+  };
 
   private redirectToLoginPage = (): void => {
     this.router.navigateByUrl('/login').then();
-  }
+  };
 
   private loadListsOfArtists = (shouldRetry = true) => {
     const successWhenLoadingTheList = (pagedList: PagedArtistResponse) => {
@@ -136,7 +171,7 @@ export class HomeComponent implements OnInit {
     this.allArtistsService
       .requestArtistsList(0, 1000000, 'asc')
       .subscribe(successWhenLoadingTheList, errorWhenLoadingTheList);
-  }
+  };
 
   private refreshTheTokenAndTryAgain = (): void => {
     const refreshSuccess = () => this.loadListsOfArtists(false);
@@ -149,7 +184,7 @@ export class HomeComponent implements OnInit {
       refreshSuccess,
       refreshFailed
     );
-  }
+  };
 
   private createMapOfArtists = (artist: Artist): void => {
     if (artist.name.length <= 0) {
@@ -164,5 +199,5 @@ export class HomeComponent implements OnInit {
     }
 
     this.artistsMap.set(key, [...theArtists, artist]);
-  }
+  };
 }

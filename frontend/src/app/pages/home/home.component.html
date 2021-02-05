@@ -24,7 +24,11 @@
                   <i class="fa fa-plus pr-2" aria-hidden="true"></i>
                   Adicionar artista
                 </button>
-                <button (click)="doLogout()" class="dropdown-item py-3" type="button">
+                <button
+                  (click)="doLogout()"
+                  class="dropdown-item py-3"
+                  type="button"
+                >
                   <i class="fas fa-sign-out-alt pr-2"></i>
                   Logout
                 </button>
@@ -49,7 +53,13 @@
                   *ngFor="let artist of block[1]"
                   class="col-12 col-md-6 col-lg-4 single-artist-container"
                 >
-                  <div class="artist-name" tabindex="1">{{ artist.name }}</div>
+                  <div
+                    (click)="navigateToArtist(artist)"
+                    class="artist-name"
+                    tabindex="1"
+                  >
+                    {{ artist.name }}
+                  </div>
                   <button
                     type="button"
                     class="btn btn-danger artist-btn"
@@ -84,8 +94,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-12">
-        </div>
+        <div class="col-12"></div>
       </div>
     </div>
   </div>
