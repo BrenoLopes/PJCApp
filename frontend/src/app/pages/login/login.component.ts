@@ -7,7 +7,6 @@ import {
 } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
 
 import {
   LoginRequest,
@@ -28,8 +27,7 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private loginService: LoginService,
     private snackBar: MatSnackBar,
-    private localStorage: MyStorageService,
-    private router: Router
+    private localStorage: MyStorageService
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +57,9 @@ export class LoginComponent implements OnInit {
   }
 
   private navigateToHome(): void {
-    this.router.navigateByUrl('/').then();
+    // This must be here so that bootstrap has the change to load
+    // the dropdowns
+    window.location.href = '/';
   }
 
   private doTheRequest(runAfter: () => void): void {
