@@ -1,0 +1,102 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-12">
+          <div class="user-menu-container mt-4">
+            <div>
+              <button
+                (click)="this.router.navigateByUrl('/').then()"
+                type="button"
+                class="btn"
+              >
+                <i class="fas fa-arrow-left"></i>
+              </button>
+            </div>
+            <div class="user-name">
+              {{ !this.theArtist ? "" : this.theArtist.name }}
+            </div>
+            <div class="user-menu">
+              <button
+                type="button"
+                class="btn"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <div class="dropdown-menu">
+                <button (click)="openAddDialog()" class="dropdown-item py-3" type="button">
+                  <i class="fa fa-plus pr-2" aria-hidden="true"></i>
+                  Adicionar Album
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="list-container my-4">
+            <div *ngFor="let block of getMapEntries()">
+              <div class="row">
+                <div class="col index-holder">
+                  <h2 class="h4 p-2 font-weight-light">
+                    {{ block[0].toUpperCase() }}
+                  </h2>
+                </div>
+              </div>
+              <div class="row album-list-container">
+                <div
+                  *ngFor="let album of block[1]"
+                  class="col-12 col-md-6 col-lg-4 single-album-container"
+                >
+                  <div class="album-image">
+                    <img
+                      [src]="
+                        album.image === ''
+                          ? 'assets/default-album.jpeg'
+                          : album.image
+                      "
+                      alt="DefaultAlbum"
+                    />
+                  </div>
+                  <div class="album-info">
+                    <div class="album-name" tabindex="1">{{ album.name }}</div>
+                    <button
+                      type="button"
+                      class="btn btn-danger album-btn"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                      <button (click)="this.openEditDialog(album)" class="dropdown-item py-3" type="button">
+                        <i class="fas fa-edit pr-2"></i>
+                        Editar Album
+                      </button>
+                      <button
+                        class="dropdown-item py-3 remove-album-btn"
+                        type="button"
+                        (click)="this.openDeleteDialog(album)"
+                      >
+                        <i class="far fa-trash-alt pr-2"></i>
+                        Remover Album
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12"></div>
+      </div>
+    </div>
+  </div>
+</div>
