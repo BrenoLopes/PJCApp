@@ -1,8 +1,9 @@
 # PJCApp
 
 ## Como rodar
-1. Copie o arquivo de .env.template ou .env.example como .env e coloque as informações que queira (como tempo de expiração do token jwt)
-2. Rode o docker-compose.yml com docker-compose up -d
+1. Baixe o arquivo PJCApp.zip na releases, extraia o arquivo
+2. Rode docker-compose up -d no terminal
+3. Aguarde uns segundos para o servidor carregar as informações
 
 ## Como desenvolver
 Este projeto foi compilado utilizando java 8 e node 14.15.4
