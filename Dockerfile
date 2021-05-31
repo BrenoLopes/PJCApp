@@ -12,6 +12,7 @@ RUN rm -rf ./frontend/node_modules
 COPY . /app/
 
 WORKDIR /app/backend
-ENTRYPOINT mvn spring-boot:run
+# ENTRYPOINT mvn spring-boot:run
+ENTRYPOINT ["java", "-jar", "./compiled/pjc-app.jar"]
 
 EXPOSE 8080
